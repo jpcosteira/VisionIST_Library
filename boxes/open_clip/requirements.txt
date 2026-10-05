@@ -1,0 +1,15 @@
+grpcio
+protobuf
+grpcio-reflection
+grpcio-status
+# torch 2.3.1 matches the clip box and runs on the nvidia/cuda 12.2 base image
+torch==2.3.1
+torchvision==0.18.1
+numpy==1.26.4
+open_clip_torch==3.3.0
+timm
+Pillow
+huggingface_hub
+safetensors
+ftfy
+regex

@@ -1,0 +1,121 @@
+# open_clip - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: open_clip
+key: open_clip
+version: 0.1.0
+summary: OpenCLIP image and text embeddings from any open_clip model and pretrained tag, with cosine similarity and zero-shot probabilities
+status: experimental
+runtime: gpu-or-cpu
+tags:
+  - embeddings
+  - multimodal
+  - zero-shot
+  - clip
+image:
+  repository: sipgisr/visionist-open-clip
+  registries:
+    - dockerhub
+  platforms:
+    - linux/amd64
+  # An estimate from the pinned wheels (torch 2.3.1 with its bundled CUDA libraries, the
+  # nvidia/cuda base, the baked default checkpoint); the image has not been built.
+  approx_size_gb: 7
+maintainers:
+  - github: jpcosteira
+    name: Joao Paulo Costeira
+    email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+    - encode
+    - models
+    - reset
+  default: encode
+parameters:
+  - name: model
+    type: string
+    default: ViT-B-32
+    commands:
+      - encode
+      - models
+    description: >-
+      An open_clip architecture name (ViT-B-32, ViT-L-14, ViT-SO400M-14-SigLIP, RN50, ...), or
+      "hf-hub:<org>/<repo>" for a Hugging Face repo that carries its own weights. OpenAI's
+      spelling "ViT-B/32" is accepted. For `models`, restricts the listing to this model.
+  - name: pretrained
+    type: string
+    default: laion2b_s34b_b79k
+    commands:
+      - encode
+    description: >-
+      The checkpoint tag for `model` (openai, laion2b_s34b_b79k, datacomp_xl_s13b_b90k, webli, ...),
+      or a path to a local checkpoint file. The default applies only to the default model; any
+      other model must name its tag. Ignored for hf-hub: models.
+  - name: device
+    type: string
+    default: auto
+    enum:
+      - auto
+      - cuda
+      - cpu
+    commands:
+      - encode
+    description: '"auto" uses the GPU when one is visible. Models return to CPU after OPEN_CLIP_IDLE_SECONDS idle.'
+  - name: normalize
+    type: boolean
+    default: true
+    commands:
+      - encode
+    description: L2-normalise image_emb and text_emb. similarity and probs are computed from normalised vectors either way.
+  - name: batch_size
+    type: integer
+    default: 32
+    commands:
+      - encode
+    description: Images or texts encoded per forward pass. Lower it if VRAM is tight; it does not change results.
+data:
+  in:
+    - field: images
+      kind: bb
+      description: JPEG/PNG bytes. Optional if texts is given.
+    - field: texts
+      kind: ss
+      description: Prompts. Optional if images is given.
+  out:
+    - field: image_emb
+      codec: numpy
+      shape: (num_images, D)
+      when: images sent
+      description: float32; D depends on the model (512 for ViT-B-32). Unit length unless normalize=false.
+    - field: text_emb
+      codec: numpy
+      shape: (num_texts, D)
+      when: texts sent
+      description: float32, same space as image_emb.
+    - field: similarity
+      codec: numpy
+      shape: (num_images, num_texts)
+      when: images and texts sent
+      description: cosine similarity in [-1, 1].
+    - field: probs
+      codec: numpy
+      shape: (num_images, num_texts)
+      when: images and texts sent
+      description: softmax over the texts of logit_scale * similarity (zero-shot classification). Rows sum to 1.
+constraints:
+  - At least one of `images` and `texts` is required; neither answers empty_request.
+  - Unlike the `clip` box the model is chosen per request. Models load on first use and are kept in an LRU cache of OPEN_CLIP_CACHE_SIZE (default 1); `reset` unloads them all.
+  - A model other than the default that is not already cached is downloaded from Hugging Face on first use, so that request is slow and the box needs network access to huggingface.co (or a mounted /workspace/.cache).
+  - Embeddings from different models or pretrained tags are not comparable with each other, only with embeddings from the same pair.
+  - Unlike the `clip` box, embeddings are unit length by default and use the numpy codec (no torch needed on the client).
+  - Texts longer than the model's context (usually 77 tokens) are truncated by open_clip.
+  - 'Command `models` lists open_clip''s registry of (model, pretrained) pairs; it does not check that a download will succeed.'
+links:
+  upstream: https://github.com/mlfoundations/open_clip
+  license: MIT
+assets:
+  - path: test/dog.jpg
+    bytes: 388353
+    sha256: 1715d210ef0c40c93b9e60cef7b988a9931df369868de2c265642d726d50b187
+    url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/clip/test/dog.jpg

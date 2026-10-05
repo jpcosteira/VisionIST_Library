@@ -54,6 +54,7 @@ checkout: `--index` also takes the published
 | [`lang_sam`](boxes/lang_sam) | `lang_sam` | gpu | Text-guided segmentation with LangSAM: phrases in, masks out | `grounding` `language` `segmentation` |
 | [`lightglue`](boxes/lightglue) | `lightglue` | gpu-or-cpu | SuperPoint/DISK features and LightGlue matching, pairwise or as a sliding-window stream | `features` `matching` `tracking` |
 | [`moge`](boxes/moge) | `moge` | cuda-only | MoGe-3 monocular geometry: metric depth, point map, normals, intrinsics | `depth` `geometry` `monocular` |
+| [`open_clip`](boxes/open_clip) | `open_clip` | gpu-or-cpu | OpenCLIP image and text embeddings from any open_clip model and pretrained tag, with cosine similarity and zero-shot probabilities | `clip` `embeddings` `multimodal` `zero-shot` |
 | [`opencv`](boxes/opencv) | `opencv` | gpu-or-cpu | Classic feature extraction and matching: SIFT/ORB via FLANN, or SuperPoint/DISK via LightGlue, plus a RANSAC fundamental matrix | `classical` `features` `matching` |
 | [`sbert`](boxes/sbert) | `sbert` | gpu-or-cpu | Sentence-BERT text embeddings and their pairwise similarity | `embeddings` `text` |
 | [`tapnext`](boxes/tapnext) | `tapnext` | gpu | TAPNext point tracking with the Tomasi-Kanade observation matrix | `points` `sfm` `tracking` |
