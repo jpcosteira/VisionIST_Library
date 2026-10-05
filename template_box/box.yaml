@@ -1,0 +1,81 @@
+# template - VisionIST box manifest
+#
+# tools/new_box.py copies this and substitutes the name. Everything downstream
+# (the registry index, the README table, the CI build matrix, the fleet
+# generator, CODEOWNERS) is generated from this file, so fill it in properly
+# once rather than repeating yourself in five places.
+#
+# Validate while you work:  python3 tools/validate_boxes.py <name>
+# Full schema:              registry/schema.json
+
+name: template                      # directory under boxes/; lowercase, underscores
+key: template                       # the config_json section the service dispatches on
+                                    # keep it equal to `name` unless you have a reason
+version: 0.1.0                      # this box's own version, bumped independently
+summary: One line describing what this box does, for the registry table
+status: experimental                # experimental | stable | deprecated
+
+runtime: cpu                        # cpu | gpu-or-cpu | gpu | cuda-only
+tags: [template]                    # free-form; tags, not directories
+
+image:
+  repository: sipg-isr/visionist-template   # no registry host: the fleet generator adds it
+  registries: [ghcr, dockerhub]
+  platforms: [linux/amd64]
+  # approx_size_gb: 1               # rough pulled size, if you know it
+
+maintainers:
+  - github: your-github-handle
+    name: Your Name
+    email: you@example.org
+
+commands:
+  values: [run, reset]
+  default: run
+
+# Keys read from `parameters` inside the config section. Omit a parameter and
+# the box's own default applies, so document the default here rather than
+# making every caller send one.
+parameters:
+  - name: scale
+    type: number
+    default: 1.0
+    description: Multiplies the reported sizes. Replace with your own.
+
+# Rare: keys the box reads from the TOP of its section rather than from
+# `parameters` (lang_sam's text_prompt is the real example).
+# section_fields: []
+
+# Stateful boxes only. `location` matters: yolo and tapnext read session_id
+# from the section top level, lightglue reads it from parameters.
+# session:
+#   key: session_id
+#   location: section
+#   cumulative: false
+
+data:
+  in:
+    - field: images
+      kind: bb                      # b | s | f | bb | ss | ff
+      required: true
+      description: JPEG/PNG bytes
+  out:
+    - field: sizes
+      codec: numpy                  # identity | json | numpy | torch | zstd_pickle
+      shape: (num_images, 2)
+      description: width and height of each decoded image, times scale
+
+constraints:
+  - Replace this with the things a caller gets wrong otherwise.
+
+# Test fixtures over 256 KB are declared here and fetched by
+# tools/fetch_assets.py, never committed.
+# assets:
+#   - path: test/big_input.png
+#     url: https://example.org/big_input.png
+#     sha256: "…"
+#     bytes: 1234567
+
+links:
+  upstream: https://example.org/the-model-or-library-this-wraps
+  license: MIT

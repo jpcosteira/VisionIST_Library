@@ -1,0 +1,136 @@
+# unimatch - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: unimatch
+key: unimatch
+version: 0.1.0
+summary: 'Unified dense matching: optical flow, stereo disparity, and multi-view depth'
+runtime: gpu-or-cpu
+status: experimental
+tags:
+- flow
+- stereo
+- depth
+- geometry
+image:
+  repository: sipg-isr/visionist-unimatch
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - flow
+  - stereo
+  - depth
+  - reset
+  default: flow
+parameters:
+- name: model
+  type: string
+  description: Checkpoint name in the image, a local path, or an http(s) URL fetched once
+- name: inference_size
+  type: array
+  description: '[h, w], overrides the automatic cap'
+- name: padding_factor
+  type: integer
+  default: 16
+- name: num_scales
+  type: integer
+  default: 1
+- name: attn_type
+  type: string
+  default: swin
+- name: reg_refine
+  type: boolean
+  default: false
+  description: needs num_scales <= 2
+- name: pred_bidir_flow
+  type: boolean
+  default: false
+  commands:
+  - flow
+- name: fwd_bwd_check
+  type: boolean
+  default: false
+  commands:
+  - flow
+  description: occlusion masks; requires pred_bidir_flow
+- name: intrinsics
+  type: array
+  commands:
+  - depth
+  required: true
+  description: 3x3, 4x4, or [fx, fy, cx, cy]
+- name: pose
+  type: array
+  commands:
+  - depth
+  description: 4x4 relative, reference -> target
+- name: min_depth
+  type: number
+  default: 0.5
+  commands:
+  - depth
+- name: max_depth
+  type: number
+  default: 10.0
+  commands:
+  - depth
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+    description: 'flow/stereo: exactly 2; depth: 1 or 2'
+  out:
+  - field: flow
+    codec: numpy
+    shape: (H, W, 2)
+    when: command=flow
+    description: pixel shift of image 1 -> image 2
+  - field: bwd_flow
+    codec: numpy
+    shape: (H, W, 2)
+    when: parameters.pred_bidir_flow
+  - field: occ_fwd
+    codec: numpy
+    shape: (H, W)
+    when: parameters.fwd_bwd_check
+  - field: occ_bwd
+    codec: numpy
+    shape: (H, W)
+    when: parameters.fwd_bwd_check
+  - field: disparity
+    codec: numpy
+    shape: (H, W)
+    when: command=stereo
+    description: left view, pixels; bigger = closer
+  - field: depth
+    codec: numpy
+    shape: (H, W)
+    when: command=depth
+    description: metres
+constraints:
+- '`flow` and `stereo` need exactly 2 images.'
+- Only the flow checkpoint ships in the image; stereo and depth need `model` until the weights exist.
+- Inputs above ~1.6 MP are downscaled inside the box (auto_resized in the reply) and the result scaled
+  back.
+- Per-scale list lengths must equal num_scales.
+links:
+  upstream: https://github.com/autonomousvision/unimatch
+assets:
+- path: test/stereo_0.png
+  bytes: 5561111
+  sha256: 912a0911370f646e4c543a9fde6bd9e1a48824925718baa54b4fce446b3c178f
+  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/unimatch/test/stereo_0.png
+- path: test/stereo_1.png
+  bytes: 5694114
+  sha256: bd614c2982f199d92442a9c1755872c43e48b6dcc7674c8d0dfa31f80b4ae2b6
+  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/unimatch/test/stereo_1.png

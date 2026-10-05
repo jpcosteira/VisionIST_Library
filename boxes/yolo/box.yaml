@@ -1,0 +1,103 @@
+# yolo - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: yolo
+key: yolo
+version: 0.1.0
+summary: YOLO object detection with always-on tracking, on images or video
+runtime: gpu-or-cpu
+status: stable
+tags:
+- detection
+- tracking
+image:
+  repository: sipg-isr/visionist-yolo
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - detect
+  - reset
+  - list
+  default: detect
+session:
+  key: session_id
+  location: section
+  note: Track ids are stable within a session and restart at 1 for a fresh tracker, so they collide across
+    sessions by design.
+parameters:
+- name: conf
+  type: number
+  default: 0.25
+- name: iou
+  type: number
+  default: 0.7
+- name: imgsz
+  type: integer
+  default: 640
+- name: max_det
+  type: integer
+  default: 300
+- name: classes
+  type: array
+  description: class ids to keep; null keeps all
+- name: save_annotated
+  type: boolean
+  default: true
+- name: frame_step
+  type: integer
+  default: 1
+  commands:
+  - detect
+- name: max_frames
+  type: integer
+  default: 1024
+  commands:
+  - detect
+- name: weights
+  type: string
+  default: yolov8n.pt
+- name: device
+  type: string
+data:
+  in:
+  - field: images
+    kind: bb
+  - field: video
+    kind: b
+    description: mp4/avi/webm/mov
+  out:
+  - field: detections
+    codec: json
+    shape: one record per frame
+    description: frame_index, width, height, boxes [x1,y1,x2,y2], class_ids, labels, scores, track_id
+  - field: annotated
+    codec: identity
+    shape: list of JPEG bytes
+    when: parameters.save_annotated
+  - field: annotated_video
+    codec: identity
+    shape: one MP4
+    when: video input
+  - field: annotated_zip
+    codec: identity
+    shape: ZIP of frames + detections + manifest
+constraints:
+- '`images` and `video` are mutually exclusive; neither gives empty_request.'
+- conf and iou are clamped to <= 1.0.
+- Sessions expire (YOLO_SESSION_TTL, default 1800s).
+links:
+  upstream: https://github.com/ultralytics/ultralytics
+assets:
+- path: test/dog.jpg
+  bytes: 388353
+  sha256: 1715d210ef0c40c93b9e60cef7b988a9931df369868de2c265642d726d50b187
+  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/yolo/test/dog.jpg

@@ -1,0 +1,84 @@
+# tapnext - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: tapnext
+key: tapnext
+version: 0.1.0
+summary: TAPNext point tracking with the Tomasi-Kanade observation matrix
+runtime: gpu
+status: stable
+tags:
+- tracking
+- points
+- sfm
+image:
+  repository: sipg-isr/visionist-tapnext
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - track
+  - reset
+  - list
+  default: track
+session:
+  key: session_id
+  location: section
+  cumulative: true
+  note: A reply covers every frame the session has seen, not only this call's.
+parameters:
+- name: grid_size
+  type: integer
+  default: 32
+  description: grid_size^2 query points; only takes effect on a session's first frame
+- name: frame_step
+  type: integer
+  default: 1
+  commands:
+  - track
+- name: max_frames
+  type: integer
+  default: 0
+  commands:
+  - track
+  description: 0 = no cap
+data:
+  in:
+  - field: images
+    kind: bb
+    description: ordered frames
+  - field: video
+    kind: b
+    description: mp4/avi/webm/mov
+  out:
+  - field: tracks
+    codec: torch
+    shape: '[F, N, 2]'
+    description: (y, x) in original pixels - note the order, the keypoint boxes report (x, y)
+  - field: visibles
+    codec: torch
+    shape: '[F, N]'
+  - field: observation_matrix
+    codec: torch
+    shape: '[2F, N]'
+    description: x and y interleaved per frame, NaN where a point is absent
+constraints:
+- '`images` and `video` are mutually exclusive; neither gives empty_request.'
+- Outputs are cumulative across calls within a session.
+- The declared encoding always lists observation_matrix even when the field is absent.
+- Sessions expire (TAPNEXT_SESSION_TTL, default 1800s).
+links:
+  upstream: https://github.com/google-deepmind/tapnet
+assets:
+- path: test/apple.mp4
+  bytes: 1219872
+  sha256: c7f48c5cfb1479e1dbc1df2373d5cad4f55c198bbdb379da0ece10087971542a
+  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/tapnext_tracker/test/apple.mp4

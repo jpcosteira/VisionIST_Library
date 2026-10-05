@@ -1,0 +1,66 @@
+# clip - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: clip
+key: clip
+version: 0.1.0
+summary: CLIP image and text embeddings with their cross-modal similarity
+runtime: gpu
+status: stable
+tags:
+- embeddings
+- multimodal
+image:
+  repository: sipg-isr/visionist-clip
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - encode
+  - reset
+  default: encode
+parameters:
+- name: model
+  type: string
+  default: ViT-B/32
+  description: Accepted for symmetry and IGNORED - the model is fixed at build time.
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+    description: JPEG/PNG bytes
+  - field: texts
+    kind: ss
+    required: true
+    description: prompts
+  out:
+  - field: image_emb
+    codec: torch
+    shape: '[num_images, 512]'
+  - field: text_emb
+    codec: torch
+    shape: '[num_texts, 512]'
+  - field: similarity
+    codec: torch
+    shape: '[num_images, num_texts]'
+    description: cross-modal logits
+constraints:
+- Missing `images` answers empty_request; missing `texts` is an error.
+- '`command` is only inspected for "reset" - anything else encodes.'
+- The model cannot be switched at runtime.
+links:
+  upstream: https://github.com/openai/CLIP
+assets:
+- path: test/dog.jpg
+  bytes: 388353
+  sha256: 1715d210ef0c40c93b9e60cef7b988a9931df369868de2c265642d726d50b187
+  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/clip/test/dog.jpg

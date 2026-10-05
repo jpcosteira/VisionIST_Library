@@ -1,0 +1,48 @@
+# sbert - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: sbert
+key: sbert
+version: 0.1.0
+summary: Sentence-BERT text embeddings and their pairwise similarity
+runtime: gpu-or-cpu
+status: stable
+tags:
+- embeddings
+- text
+image:
+  repository: sipg-isr/visionist-sbert
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - encode
+  - reset
+  default: encode
+data:
+  in:
+  - field: texts
+    kind: ss
+    required: true
+  out:
+  - field: embeddings
+    codec: torch
+    shape: '[num_texts, 384]'
+    description: all-MiniLM-L6-v2, fixed
+  - field: similarities
+    codec: torch
+    shape: '[num_texts, num_texts]'
+constraints:
+- The config section is `sbert`, NOT `textEmbedding` - the directory and the key differ for this box.
+- An empty `texts` list gives empty_request.
+- No image input.
+links:
+  upstream: https://www.sbert.net

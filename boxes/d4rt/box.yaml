@@ -1,0 +1,196 @@
+# d4rt - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: d4rt
+key: d4rt
+version: 0.1.0
+summary: OpenD4RT 4D reconstruction and tracking - 3D point tracks, point clouds and camera poses from a video
+status: experimental
+runtime: gpu
+tags:
+  - tracking
+  - reconstruction
+  - depth
+  - dynamic-3d
+  - geometry
+image:
+  repository: sipg-isr/visionist-d4rt
+  registries:
+    - ghcr
+    - dockerhub
+  platforms:
+    - linux/amd64
+  approx_size_gb: 12
+maintainers:
+  - github: jpcosteira
+    name: Joao Paulo Costeira
+    email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+    - track
+    - reconstruct
+    - cameras
+    - reset
+  default: track
+parameters:
+  - name: device
+    type: string
+    description: '"cuda" | "cuda:N" | "cpu". CPU runs but is impractical at ~1.16B parameters.'
+  - name: frame_step
+    type: integer
+    default: 1
+    description: Sample every Nth frame while decoding.
+  - name: max_frames
+    type: integer
+    default: 48
+    description: >-
+      Cap on decoded frames. The model sees at most clip_frames at once (48 for the default
+      checkpoint, 32 for the other); longer inputs are handled upstream by clip anchoring, but
+      staying within one clip is both faster and more accurate.
+  - name: chunk_size
+    type: integer
+    default: 4096
+    description: Queries per decoder call. Lower it if VRAM is tight; it does not change results.
+  - name: points
+    type: array
+    commands:
+      - track
+    description: >-
+      Flat [u0, v0, u1, v1, ...] of normalised query pixels in [0, 1]. Prefer data.points (an ff
+      FloatList); this is the convenience form for a hand-written config. Omit both for a grid.
+  - name: grid_size
+    type: integer
+    default: 32
+    commands:
+      - track
+    description: Side of the uv grid used when no explicit points are given (grid_size^2 queries).
+  - name: t_src
+    type: integer
+    default: 0
+    commands:
+      - track
+    description: The frame the query pixels are read from. Tracks run forward and backward from it.
+  - name: point_grid_size
+    type: integer
+    default: 64
+    commands:
+      - reconstruct
+    description: Side of the uv grid sampled for the point cloud.
+  - name: max_points
+    type: integer
+    default: 4096
+    commands:
+      - reconstruct
+    description: Cap applied after gridding, by even subsampling.
+  - name: camera_grid_size
+    type: integer
+    default: 16
+    commands:
+      - cameras
+    description: Coarse grid the intrinsics least-squares and the Umeyama pose fit run on.
+  - name: intrinsics
+    type: boolean
+    default: true
+    commands:
+      - cameras
+  - name: extrinsics
+    type: boolean
+    default: true
+    commands:
+      - cameras
+data:
+  in:
+    - field: video
+      kind: b
+      description: One video file (mp4/avi/webm/mov). Mutually exclusive with images.
+    - field: images
+      kind: bb
+      description: Ordered frames, all the same size. Mutually exclusive with video.
+    - field: points
+      kind: ff
+      description: 'track: flat [u0, v0, u1, v1, ...] normalised query pixels in [0, 1].'
+  out:
+    - field: query_uv
+      codec: numpy
+      shape: (Q, 2)
+      when: track, reconstruct
+      description: the normalised query pixels actually used, after gridding or capping
+    - field: tracks_xyz_local
+      codec: numpy
+      shape: (Q, T, 3)
+      when: command=track
+      description: each query point's 3D position at frame t, in the camera frame of that same t
+    - field: tracks_xyz_ref0
+      codec: numpy
+      shape: (Q, T, 3)
+      when: command=track
+      description: the same points in the camera frame of frame 0 - the one to use for motion
+    - field: tracks_uv
+      codec: numpy
+      shape: (Q, T, 2)
+      when: command=track
+      description: 2D reprojection, normalised like the input uv
+    - field: tracks_visibility
+      codec: numpy
+      shape: (Q, T)
+      when: command=track
+      description: boolean, already thresholded from the model's logits
+    - field: tracks_confidence
+      codec: numpy
+      shape: (Q, T)
+      when: command=track
+      description: raw scalar, meaningful for ranking rather than as a probability
+    - field: points_xyz
+      codec: numpy
+      shape: (T, P, 3)
+      when: command=reconstruct
+      description: per-frame point cloud in the camera frame of frame 0; NaN where unresolved
+    - field: points_visibility
+      codec: numpy
+      shape: (T, P)
+      when: command=reconstruct
+    - field: points_confidence
+      codec: numpy
+      shape: (T, P)
+      when: command=reconstruct
+    - field: intrinsics
+      codec: numpy
+      shape: (T, 3, 3)
+      when: command=cameras
+      description: per-frame K, least-squares from the query grid with a shared focal length
+    - field: extrinsics
+      codec: numpy
+      shape: (T, 4, 4)
+      when: command=cameras
+      description: T_ref0_cam per frame, from pairwise Umeyama alignment
+    - field: valid_intrinsics
+      codec: numpy
+      shape: (T,)
+      when: command=cameras
+      description: boolean - a frame whose fit did not converge is left as identity and marked false
+    - field: valid_extrinsics
+      codec: numpy
+      shape: (T,)
+      when: command=cameras
+constraints:
+  - '`images` and `video` are mutually exclusive; neither gives empty_request.'
+  - At least 2 frames are required, and all images must share one size.
+  - >-
+    Predictions are up to scale, not metric: every upstream evaluation aligns them to ground truth
+    with a similarity transform before measuring. Do not read xyz as metres.
+  - >-
+    Query timesteps are clamped to the model's clip_frames upstream rather than rejected, so asking
+    about a frame beyond the clip returns a confident wrong answer. max_frames defaults to the clip
+    length for that reason.
+  - >-
+    The checkpoint is loaded non-strictly upstream, which would turn a config mismatch into a
+    silently garbage model; this box refuses to serve if any key is missing or unexpected.
+  - >-
+    GPU in practice. Nothing is CUDA-only - there are no custom kernels - but ~1.16B parameters in
+    fp32 makes CPU inference impractical rather than merely slow.
+  - The image bakes in a ~4.6 GB checkpoint; build with DOWNLOAD_WEIGHTS=false to mount it instead.
+links:
+  upstream: https://github.com/Lijiaxin0111/Open-d4rt
+  paper: https://d4rt-paper.github.io/
+  license: Apache-2.0

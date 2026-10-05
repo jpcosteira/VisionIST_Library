@@ -1,0 +1,90 @@
+# features - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: features
+key: features
+version: 0.1.0
+summary: 'SIFT keypoints in the SIFT-Extractor layout: (2+128) x N, annotated JPEGs, MATLAB .mat'
+runtime: cpu
+status: experimental
+tags:
+- features
+- classical
+- sift
+image:
+  repository: sipg-isr/visionist-features
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - extract
+  - reset
+  default: extract
+parameters:
+- name: nfeatures
+  type: integer
+  default: 0
+  description: '0 keeps every keypoint. Approximate: OpenCV keeps keypoints tied with the last retained
+    one, so 500 can return 501.'
+- name: n_octave_layers
+  type: integer
+  default: 3
+- name: contrast_threshold
+  type: number
+  default: 0.04
+- name: edge_threshold
+  type: number
+  default: 10
+- name: sigma
+  type: number
+  default: 1.6
+- name: draw
+  type: boolean
+  default: true
+  description: Return the red-dot annotated JPEGs.
+- name: radius
+  type: integer
+  default: 2
+- name: mat
+  type: boolean
+  default: false
+  description: Also return one MATLAB .mat per image, key `kp`.
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+  - field: names
+    kind: ss
+    description: one file name per image; names the .mat artifacts
+  out:
+  - field: keypoints
+    codec: numpy
+    shape: (num_images, 130, N)
+    description: row 0 = x, row 1 = y, rows 2..129 = descriptor; zero-padded to the widest image
+  - field: counts
+    codec: numpy
+    shape: (num_images,)
+    description: true N per image - always slice with this
+  - field: annotated
+    codec: identity
+    shape: list of JPEG bytes
+    when: parameters.draw
+  - field: mat
+    codec: identity
+    shape: list of .mat bytes
+    when: parameters.mat
+constraints:
+- '`names` must have exactly as many entries as `images`.'
+- Booleans also accept the strings "true"/"false".
+- 'Pure CPU: no device parameter.'
+links:
+  upstream: https://github.com/pivist/features

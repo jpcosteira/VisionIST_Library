@@ -1,0 +1,106 @@
+# lightglue - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: lightglue
+key: lightglue
+version: 0.1.0
+summary: SuperPoint/DISK features and LightGlue matching, pairwise or as a sliding-window stream
+runtime: gpu-or-cpu
+status: experimental
+tags:
+- features
+- matching
+- tracking
+image:
+  repository: sipg-isr/visionist-lightglue
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - match
+  - stream
+  - reset
+  - list
+  default: match
+session:
+  key: session_id
+  location: parameters
+  note: Only `stream` is stateful. A reset without a session id clears every session.
+parameters:
+- name: feature_extractor
+  type: string
+  default: SUPERPOINT
+  enum:
+  - SUPERPOINT
+  - DISK
+- name: max_keypoints
+  type: integer
+  default: 1024
+  description: minimum 8
+- name: filter_threshold
+  type: number
+  description: match confidence cut, <= 1
+- name: window
+  type: integer
+  default: 3
+  commands:
+  - stream
+  description: stored references to match the new frame against, 1..16
+- name: device
+  type: string
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+    description: 'match: 1 or 2; stream: exactly 1'
+  out:
+  - field: keypoints
+    codec: numpy
+    shape: 'match: (n_images, N, 2); stream: (J+1, N, 2)'
+    description: 'stream: rows 0..J-1 are the stored references newest first, row J is the new frame'
+  - field: descriptors
+    codec: numpy
+    shape: (n_images, N, D)
+    when: command=match
+  - field: scores
+    codec: numpy
+    shape: (n_images, N)
+    when: command=match
+  - field: matches
+    codec: numpy
+    shape: (M, 2) int64
+    when: command=match with 2 images
+    description: ZERO-BASED index pairs
+  - field: confidence
+    codec: numpy
+    shape: (M,)
+    when: command=match with 2 images
+  - field: kp_counts
+    codec: numpy
+    shape: (J+1,)
+    when: command=stream
+  - field: matches_j
+    codec: numpy
+    shape: (M, 2)
+    when: command=stream, j = 1..J
+    description: column 0 indexes reference j, column 1 the new frame; ZERO-BASED
+  - field: confidence_j
+    codec: numpy
+    shape: (M,)
+    when: command=stream, j = 1..J
+constraints:
+- '`match` is pairwise: more than 2 images is an error; with 1 image no matches are returned.'
+- '`stream` takes exactly 1 image per call.'
+- 'The first frame of a stream session reports first_frame: true and no matches.'
+- Sessions expire (LIGHTGLUE_SESSION_TTL, default 1800s).
+links:
+  upstream: https://github.com/cvg/LightGlue

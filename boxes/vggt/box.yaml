@@ -1,0 +1,76 @@
+# vggt - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: vggt
+key: vggt
+version: 0.1.0
+summary: 'VGGT multi-view 3D reconstruction: world points, per-view depth, camera poses, and a GLB'
+runtime: gpu
+status: stable
+tags:
+- reconstruction
+- geometry
+- multiview
+image:
+  repository: sipg-isr/visionist-vggt
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+  approx_size_gb: 8
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - reconstruct
+  - reset
+  default: reconstruct
+parameters:
+- name: conf_threshold
+  type: number
+  default: 30
+  description: percentile for the GLB point filter
+- name: device
+  type: string
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+    description: all of identical dimensions
+  out:
+  - field: world_points
+    codec: torch
+    shape: '[S, H, W, 3]'
+  - field: world_points_conf
+    codec: torch
+    shape: '[S, H, W]'
+  - field: depth
+    codec: torch
+    shape: '[S, H, W, 1]'
+  - field: depth_conf
+    codec: torch
+    shape: '[S, H, W]'
+  - field: extrinsic
+    codec: torch
+    shape: '[S, 3, 4]'
+  - field: intrinsic
+    codec: torch
+    shape: '[S, 3, 3]'
+  - field: images
+    codec: torch
+    shape: '[S, 3, H, W]'
+    description: the preprocessed tensor the model saw
+  - field: glb_file
+    codec: identity
+    shape: binary glTF
+constraints:
+- Every input image must have identical dimensions; otherwise the box errors and lists the shapes.
+- The build downloads the VGGT-1B checkpoint (~5 GB) - the heaviest image in the registry.
+- Model load is async and the first call blocks until it finishes.
+links:
+  upstream: https://github.com/facebookresearch/vggt

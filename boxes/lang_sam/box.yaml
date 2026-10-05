@@ -1,0 +1,63 @@
+# lang_sam - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: lang_sam
+key: lang_sam
+version: 0.1.0
+summary: 'Text-guided segmentation with LangSAM: phrases in, masks out'
+runtime: gpu
+status: stable
+tags:
+- segmentation
+- language
+- grounding
+image:
+  repository: sipg-isr/visionist-lang-sam
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - segment
+  - reset
+  default: segment
+section_fields:
+- name: text_prompt
+  type: array
+  required: true
+  description: List of phrases, read from the TOP of the section (falls back to parameters.text_prompt).
+    Joined as "a. b." and reused for every image.
+parameters:
+- name: box_threshold
+  type: number
+  default: 0.3
+- name: text_threshold
+  type: number
+  default: 0.25
+- name: device
+  type: string
+  description: '"cuda" when visible'
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+  out:
+  - field: results
+    codec: zstd_pickle
+    shape: list, one dict per image
+    description: masks, boxes, scores and labels from LangSAM.predict()
+constraints:
+- Declares `encoding` as a bare string, not a per-field map.
+- No `text_prompt` is an error.
+- A request with no `images` key at all is echoed back verbatim rather than erroring.
+- Also answers to the section names `lang_segm` and `aispgradio`.
+links:
+  upstream: https://github.com/luca-medeiros/lang-segment-anything

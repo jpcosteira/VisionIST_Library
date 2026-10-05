@@ -1,0 +1,82 @@
+# opencv - VisionIST box manifest
+# Validated against registry/schema.json by CI.
+# Everything downstream (index, README table, build matrix,
+# fleet generator) is generated from this file.
+name: opencv
+key: opencv
+version: 0.1.0
+summary: 'Classic feature extraction and matching: SIFT/ORB via FLANN, or SuperPoint/DISK via LightGlue,
+  plus a RANSAC fundamental matrix'
+runtime: gpu-or-cpu
+status: stable
+tags:
+- features
+- matching
+- classical
+image:
+  repository: sipg-isr/visionist-opencv
+  registries:
+  - ghcr
+  - dockerhub
+  platforms:
+  - linux/amd64
+maintainers:
+- github: jpcosteira
+  name: Joao Paulo Costeira
+  email: jpc@isr.tecnico.ulisboa.pt
+commands:
+  values:
+  - match
+  - reset
+  default: match
+parameters:
+- name: feature_extractor
+  type: string
+  default: SIFT
+  enum:
+  - SIFT
+  - ORB
+  - SUPERPOINT
+  - DISK
+- name: ratio_thresh
+  type: number
+  default: 0.75
+  description: Lowe ratio, FLANN path only
+- name: max_keypoints
+  type: integer
+  default: 500
+- name: device
+  type: string
+  description: LightGlue path only
+data:
+  in:
+  - field: images
+    kind: bb
+    required: true
+    description: 1 or 2
+  out:
+  - field: keypoints
+    codec: numpy
+    shape: (n_images, N, 2)
+  - field: descriptors
+    codec: numpy
+    shape: (n_images, N, D)
+    description: 128 SIFT, 32 ORB; the LightGlue path returns a zeros placeholder
+  - field: matches_inliers_a
+    codec: numpy
+    shape: (K, 2)
+    when: 2 images
+  - field: matches_inliers_b
+    codec: numpy
+    shape: (K, 2)
+    when: 2 images
+  - field: fundamental_matrix
+    codec: numpy
+    shape: (3, 3)
+    when: 2 images
+    description: empty (0,0) when RANSAC had too few matches
+constraints:
+- SUPERPOINT/DISK route through LightGlue and need exactly 2 images.
+- With 1 image the matching fields are ABSENT, not empty - check before reading them.
+links:
+  upstream: https://opencv.org

@@ -1,0 +1,1033 @@
+{
+  "schema": "registry/schema.json",
+  "generated_by": "tools/build_index.py",
+  "count": 12,
+  "boxes": [
+    {
+      "name": "clip",
+      "key": "clip",
+      "version": "0.1.0",
+      "summary": "CLIP image and text embeddings with their cross-modal similarity",
+      "runtime": "gpu",
+      "status": "stable",
+      "tags": [
+        "embeddings",
+        "multimodal"
+      ],
+      "commands": [
+        "encode",
+        "reset"
+      ],
+      "default_command": "encode",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-clip",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-clip:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-clip:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true,
+            "description": "JPEG/PNG bytes"
+          },
+          {
+            "field": "texts",
+            "kind": "ss",
+            "required": true,
+            "description": "prompts"
+          }
+        ],
+        "out": [
+          {
+            "field": "image_emb",
+            "codec": "torch",
+            "shape": "[num_images, 512]"
+          },
+          {
+            "field": "text_emb",
+            "codec": "torch",
+            "shape": "[num_texts, 512]"
+          },
+          {
+            "field": "similarity",
+            "codec": "torch",
+            "shape": "[num_images, num_texts]",
+            "description": "cross-modal logits"
+          }
+        ]
+      },
+      "constraints": [
+        "Missing `images` answers empty_request; missing `texts` is an error.",
+        "`command` is only inspected for \"reset\" - anything else encodes.",
+        "The model cannot be switched at runtime."
+      ],
+      "path": "boxes/clip"
+    },
+    {
+      "name": "d4rt",
+      "key": "d4rt",
+      "version": "0.1.0",
+      "summary": "OpenD4RT 4D reconstruction and tracking - 3D point tracks, point clouds and camera poses from a video",
+      "runtime": "gpu",
+      "status": "experimental",
+      "tags": [
+        "depth",
+        "dynamic-3d",
+        "geometry",
+        "reconstruction",
+        "tracking"
+      ],
+      "commands": [
+        "track",
+        "reconstruct",
+        "cameras",
+        "reset"
+      ],
+      "default_command": "track",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-d4rt",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": 12,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-d4rt:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-d4rt:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "video",
+            "kind": "b",
+            "description": "One video file (mp4/avi/webm/mov). Mutually exclusive with images."
+          },
+          {
+            "field": "images",
+            "kind": "bb",
+            "description": "Ordered frames, all the same size. Mutually exclusive with video."
+          },
+          {
+            "field": "points",
+            "kind": "ff",
+            "description": "track: flat [u0, v0, u1, v1, ...] normalised query pixels in [0, 1]."
+          }
+        ],
+        "out": [
+          {
+            "field": "query_uv",
+            "codec": "numpy",
+            "shape": "(Q, 2)",
+            "when": "track, reconstruct",
+            "description": "the normalised query pixels actually used, after gridding or capping"
+          },
+          {
+            "field": "tracks_xyz_local",
+            "codec": "numpy",
+            "shape": "(Q, T, 3)",
+            "when": "command=track",
+            "description": "each query point's 3D position at frame t, in the camera frame of that same t"
+          },
+          {
+            "field": "tracks_xyz_ref0",
+            "codec": "numpy",
+            "shape": "(Q, T, 3)",
+            "when": "command=track",
+            "description": "the same points in the camera frame of frame 0 - the one to use for motion"
+          },
+          {
+            "field": "tracks_uv",
+            "codec": "numpy",
+            "shape": "(Q, T, 2)",
+            "when": "command=track",
+            "description": "2D reprojection, normalised like the input uv"
+          },
+          {
+            "field": "tracks_visibility",
+            "codec": "numpy",
+            "shape": "(Q, T)",
+            "when": "command=track",
+            "description": "boolean, already thresholded from the model's logits"
+          },
+          {
+            "field": "tracks_confidence",
+            "codec": "numpy",
+            "shape": "(Q, T)",
+            "when": "command=track",
+            "description": "raw scalar, meaningful for ranking rather than as a probability"
+          },
+          {
+            "field": "points_xyz",
+            "codec": "numpy",
+            "shape": "(T, P, 3)",
+            "when": "command=reconstruct",
+            "description": "per-frame point cloud in the camera frame of frame 0; NaN where unresolved"
+          },
+          {
+            "field": "points_visibility",
+            "codec": "numpy",
+            "shape": "(T, P)",
+            "when": "command=reconstruct"
+          },
+          {
+            "field": "points_confidence",
+            "codec": "numpy",
+            "shape": "(T, P)",
+            "when": "command=reconstruct"
+          },
+          {
+            "field": "intrinsics",
+            "codec": "numpy",
+            "shape": "(T, 3, 3)",
+            "when": "command=cameras",
+            "description": "per-frame K, least-squares from the query grid with a shared focal length"
+          },
+          {
+            "field": "extrinsics",
+            "codec": "numpy",
+            "shape": "(T, 4, 4)",
+            "when": "command=cameras",
+            "description": "T_ref0_cam per frame, from pairwise Umeyama alignment"
+          },
+          {
+            "field": "valid_intrinsics",
+            "codec": "numpy",
+            "shape": "(T,)",
+            "when": "command=cameras",
+            "description": "boolean - a frame whose fit did not converge is left as identity and marked false"
+          },
+          {
+            "field": "valid_extrinsics",
+            "codec": "numpy",
+            "shape": "(T,)",
+            "when": "command=cameras"
+          }
+        ]
+      },
+      "constraints": [
+        "`images` and `video` are mutually exclusive; neither gives empty_request.",
+        "At least 2 frames are required, and all images must share one size.",
+        "Predictions are up to scale, not metric: every upstream evaluation aligns them to ground truth with a similarity transform before measuring. Do not read xyz as metres.",
+        "Query timesteps are clamped to the model's clip_frames upstream rather than rejected, so asking about a frame beyond the clip returns a confident wrong answer. max_frames defaults to the clip length for that reason.",
+        "The checkpoint is loaded non-strictly upstream, which would turn a config mismatch into a silently garbage model; this box refuses to serve if any key is missing or unexpected.",
+        "GPU in practice. Nothing is CUDA-only - there are no custom kernels - but ~1.16B parameters in fp32 makes CPU inference impractical rather than merely slow.",
+        "The image bakes in a ~4.6 GB checkpoint; build with DOWNLOAD_WEIGHTS=false to mount it instead."
+      ],
+      "path": "boxes/d4rt"
+    },
+    {
+      "name": "features",
+      "key": "features",
+      "version": "0.1.0",
+      "summary": "SIFT keypoints in the SIFT-Extractor layout: (2+128) x N, annotated JPEGs, MATLAB .mat",
+      "runtime": "cpu",
+      "status": "experimental",
+      "tags": [
+        "classical",
+        "features",
+        "sift"
+      ],
+      "commands": [
+        "extract",
+        "reset"
+      ],
+      "default_command": "extract",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-features",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-features:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-features:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true
+          },
+          {
+            "field": "names",
+            "kind": "ss",
+            "description": "one file name per image; names the .mat artifacts"
+          }
+        ],
+        "out": [
+          {
+            "field": "keypoints",
+            "codec": "numpy",
+            "shape": "(num_images, 130, N)",
+            "description": "row 0 = x, row 1 = y, rows 2..129 = descriptor; zero-padded to the widest image"
+          },
+          {
+            "field": "counts",
+            "codec": "numpy",
+            "shape": "(num_images,)",
+            "description": "true N per image - always slice with this"
+          },
+          {
+            "field": "annotated",
+            "codec": "identity",
+            "shape": "list of JPEG bytes",
+            "when": "parameters.draw"
+          },
+          {
+            "field": "mat",
+            "codec": "identity",
+            "shape": "list of .mat bytes",
+            "when": "parameters.mat"
+          }
+        ]
+      },
+      "constraints": [
+        "`names` must have exactly as many entries as `images`.",
+        "Booleans also accept the strings \"true\"/\"false\".",
+        "Pure CPU: no device parameter."
+      ],
+      "path": "boxes/features"
+    },
+    {
+      "name": "lang_sam",
+      "key": "lang_sam",
+      "version": "0.1.0",
+      "summary": "Text-guided segmentation with LangSAM: phrases in, masks out",
+      "runtime": "gpu",
+      "status": "stable",
+      "tags": [
+        "grounding",
+        "language",
+        "segmentation"
+      ],
+      "commands": [
+        "segment",
+        "reset"
+      ],
+      "default_command": "segment",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-lang-sam",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-lang-sam:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-lang-sam:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true
+          }
+        ],
+        "out": [
+          {
+            "field": "results",
+            "codec": "zstd_pickle",
+            "shape": "list, one dict per image",
+            "description": "masks, boxes, scores and labels from LangSAM.predict()"
+          }
+        ]
+      },
+      "constraints": [
+        "Declares `encoding` as a bare string, not a per-field map.",
+        "No `text_prompt` is an error.",
+        "A request with no `images` key at all is echoed back verbatim rather than erroring.",
+        "Also answers to the section names `lang_segm` and `aispgradio`."
+      ],
+      "path": "boxes/lang_sam"
+    },
+    {
+      "name": "lightglue",
+      "key": "lightglue",
+      "version": "0.1.0",
+      "summary": "SuperPoint/DISK features and LightGlue matching, pairwise or as a sliding-window stream",
+      "runtime": "gpu-or-cpu",
+      "status": "experimental",
+      "tags": [
+        "features",
+        "matching",
+        "tracking"
+      ],
+      "commands": [
+        "match",
+        "stream",
+        "reset",
+        "list"
+      ],
+      "default_command": "match",
+      "session": {
+        "key": "session_id",
+        "location": "parameters",
+        "note": "Only `stream` is stateful. A reset without a session id clears every session."
+      },
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-lightglue",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-lightglue:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-lightglue:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true,
+            "description": "match: 1 or 2; stream: exactly 1"
+          }
+        ],
+        "out": [
+          {
+            "field": "keypoints",
+            "codec": "numpy",
+            "shape": "match: (n_images, N, 2); stream: (J+1, N, 2)",
+            "description": "stream: rows 0..J-1 are the stored references newest first, row J is the new frame"
+          },
+          {
+            "field": "descriptors",
+            "codec": "numpy",
+            "shape": "(n_images, N, D)",
+            "when": "command=match"
+          },
+          {
+            "field": "scores",
+            "codec": "numpy",
+            "shape": "(n_images, N)",
+            "when": "command=match"
+          },
+          {
+            "field": "matches",
+            "codec": "numpy",
+            "shape": "(M, 2) int64",
+            "when": "command=match with 2 images",
+            "description": "ZERO-BASED index pairs"
+          },
+          {
+            "field": "confidence",
+            "codec": "numpy",
+            "shape": "(M,)",
+            "when": "command=match with 2 images"
+          },
+          {
+            "field": "kp_counts",
+            "codec": "numpy",
+            "shape": "(J+1,)",
+            "when": "command=stream"
+          },
+          {
+            "field": "matches_j",
+            "codec": "numpy",
+            "shape": "(M, 2)",
+            "when": "command=stream, j = 1..J",
+            "description": "column 0 indexes reference j, column 1 the new frame; ZERO-BASED"
+          },
+          {
+            "field": "confidence_j",
+            "codec": "numpy",
+            "shape": "(M,)",
+            "when": "command=stream, j = 1..J"
+          }
+        ]
+      },
+      "constraints": [
+        "`match` is pairwise: more than 2 images is an error; with 1 image no matches are returned.",
+        "`stream` takes exactly 1 image per call.",
+        "The first frame of a stream session reports first_frame: true and no matches.",
+        "Sessions expire (LIGHTGLUE_SESSION_TTL, default 1800s)."
+      ],
+      "path": "boxes/lightglue"
+    },
+    {
+      "name": "moge",
+      "key": "moge",
+      "version": "0.1.0",
+      "summary": "MoGe-3 monocular geometry: metric depth, point map, normals, intrinsics",
+      "runtime": "cuda-only",
+      "status": "stable",
+      "tags": [
+        "depth",
+        "geometry",
+        "monocular"
+      ],
+      "commands": [
+        "infer",
+        "reset"
+      ],
+      "default_command": "infer",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-moge",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-moge:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-moge:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true
+          }
+        ],
+        "out": [
+          {
+            "field": "results",
+            "codec": "zstd_pickle",
+            "shape": "list, one dict per image",
+            "description": "points (H,W,3), depth (H,W), intrinsics (3,3), mask (H,W), normal (H,W,3); OpenCV camera coords"
+          }
+        ]
+      },
+      "constraints": [
+        "CUDA only: an explicit device \"cpu\" is rejected (the refinement uses CUDA-only Triton kernels).",
+        "Declares `encoding` as a bare string.",
+        "Invalid pixels come back as inf/nan in depth - filter with the mask."
+      ],
+      "path": "boxes/moge"
+    },
+    {
+      "name": "opencv",
+      "key": "opencv",
+      "version": "0.1.0",
+      "summary": "Classic feature extraction and matching: SIFT/ORB via FLANN, or SuperPoint/DISK via LightGlue, plus a RANSAC fundamental matrix",
+      "runtime": "gpu-or-cpu",
+      "status": "stable",
+      "tags": [
+        "classical",
+        "features",
+        "matching"
+      ],
+      "commands": [
+        "match",
+        "reset"
+      ],
+      "default_command": "match",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-opencv",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-opencv:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-opencv:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true,
+            "description": "1 or 2"
+          }
+        ],
+        "out": [
+          {
+            "field": "keypoints",
+            "codec": "numpy",
+            "shape": "(n_images, N, 2)"
+          },
+          {
+            "field": "descriptors",
+            "codec": "numpy",
+            "shape": "(n_images, N, D)",
+            "description": "128 SIFT, 32 ORB; the LightGlue path returns a zeros placeholder"
+          },
+          {
+            "field": "matches_inliers_a",
+            "codec": "numpy",
+            "shape": "(K, 2)",
+            "when": "2 images"
+          },
+          {
+            "field": "matches_inliers_b",
+            "codec": "numpy",
+            "shape": "(K, 2)",
+            "when": "2 images"
+          },
+          {
+            "field": "fundamental_matrix",
+            "codec": "numpy",
+            "shape": "(3, 3)",
+            "when": "2 images",
+            "description": "empty (0,0) when RANSAC had too few matches"
+          }
+        ]
+      },
+      "constraints": [
+        "SUPERPOINT/DISK route through LightGlue and need exactly 2 images.",
+        "With 1 image the matching fields are ABSENT, not empty - check before reading them."
+      ],
+      "path": "boxes/opencv"
+    },
+    {
+      "name": "sbert",
+      "key": "sbert",
+      "version": "0.1.0",
+      "summary": "Sentence-BERT text embeddings and their pairwise similarity",
+      "runtime": "gpu-or-cpu",
+      "status": "stable",
+      "tags": [
+        "embeddings",
+        "text"
+      ],
+      "commands": [
+        "encode",
+        "reset"
+      ],
+      "default_command": "encode",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-sbert",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-sbert:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-sbert:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "texts",
+            "kind": "ss",
+            "required": true
+          }
+        ],
+        "out": [
+          {
+            "field": "embeddings",
+            "codec": "torch",
+            "shape": "[num_texts, 384]",
+            "description": "all-MiniLM-L6-v2, fixed"
+          },
+          {
+            "field": "similarities",
+            "codec": "torch",
+            "shape": "[num_texts, num_texts]"
+          }
+        ]
+      },
+      "constraints": [
+        "The config section is `sbert`, NOT `textEmbedding` - the directory and the key differ for this box.",
+        "An empty `texts` list gives empty_request.",
+        "No image input."
+      ],
+      "path": "boxes/sbert"
+    },
+    {
+      "name": "tapnext",
+      "key": "tapnext",
+      "version": "0.1.0",
+      "summary": "TAPNext point tracking with the Tomasi-Kanade observation matrix",
+      "runtime": "gpu",
+      "status": "stable",
+      "tags": [
+        "points",
+        "sfm",
+        "tracking"
+      ],
+      "commands": [
+        "track",
+        "reset",
+        "list"
+      ],
+      "default_command": "track",
+      "session": {
+        "key": "session_id",
+        "location": "section",
+        "cumulative": true,
+        "note": "A reply covers every frame the session has seen, not only this call's."
+      },
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-tapnext",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-tapnext:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-tapnext:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "description": "ordered frames"
+          },
+          {
+            "field": "video",
+            "kind": "b",
+            "description": "mp4/avi/webm/mov"
+          }
+        ],
+        "out": [
+          {
+            "field": "tracks",
+            "codec": "torch",
+            "shape": "[F, N, 2]",
+            "description": "(y, x) in original pixels - note the order, the keypoint boxes report (x, y)"
+          },
+          {
+            "field": "visibles",
+            "codec": "torch",
+            "shape": "[F, N]"
+          },
+          {
+            "field": "observation_matrix",
+            "codec": "torch",
+            "shape": "[2F, N]",
+            "description": "x and y interleaved per frame, NaN where a point is absent"
+          }
+        ]
+      },
+      "constraints": [
+        "`images` and `video` are mutually exclusive; neither gives empty_request.",
+        "Outputs are cumulative across calls within a session.",
+        "The declared encoding always lists observation_matrix even when the field is absent.",
+        "Sessions expire (TAPNEXT_SESSION_TTL, default 1800s)."
+      ],
+      "path": "boxes/tapnext"
+    },
+    {
+      "name": "unimatch",
+      "key": "unimatch",
+      "version": "0.1.0",
+      "summary": "Unified dense matching: optical flow, stereo disparity, and multi-view depth",
+      "runtime": "gpu-or-cpu",
+      "status": "experimental",
+      "tags": [
+        "depth",
+        "flow",
+        "geometry",
+        "stereo"
+      ],
+      "commands": [
+        "flow",
+        "stereo",
+        "depth",
+        "reset"
+      ],
+      "default_command": "flow",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-unimatch",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-unimatch:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-unimatch:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true,
+            "description": "flow/stereo: exactly 2; depth: 1 or 2"
+          }
+        ],
+        "out": [
+          {
+            "field": "flow",
+            "codec": "numpy",
+            "shape": "(H, W, 2)",
+            "when": "command=flow",
+            "description": "pixel shift of image 1 -> image 2"
+          },
+          {
+            "field": "bwd_flow",
+            "codec": "numpy",
+            "shape": "(H, W, 2)",
+            "when": "parameters.pred_bidir_flow"
+          },
+          {
+            "field": "occ_fwd",
+            "codec": "numpy",
+            "shape": "(H, W)",
+            "when": "parameters.fwd_bwd_check"
+          },
+          {
+            "field": "occ_bwd",
+            "codec": "numpy",
+            "shape": "(H, W)",
+            "when": "parameters.fwd_bwd_check"
+          },
+          {
+            "field": "disparity",
+            "codec": "numpy",
+            "shape": "(H, W)",
+            "when": "command=stereo",
+            "description": "left view, pixels; bigger = closer"
+          },
+          {
+            "field": "depth",
+            "codec": "numpy",
+            "shape": "(H, W)",
+            "when": "command=depth",
+            "description": "metres"
+          }
+        ]
+      },
+      "constraints": [
+        "`flow` and `stereo` need exactly 2 images.",
+        "Only the flow checkpoint ships in the image; stereo and depth need `model` until the weights exist.",
+        "Inputs above ~1.6 MP are downscaled inside the box (auto_resized in the reply) and the result scaled back.",
+        "Per-scale list lengths must equal num_scales."
+      ],
+      "path": "boxes/unimatch"
+    },
+    {
+      "name": "vggt",
+      "key": "vggt",
+      "version": "0.1.0",
+      "summary": "VGGT multi-view 3D reconstruction: world points, per-view depth, camera poses, and a GLB",
+      "runtime": "gpu",
+      "status": "stable",
+      "tags": [
+        "geometry",
+        "multiview",
+        "reconstruction"
+      ],
+      "commands": [
+        "reconstruct",
+        "reset"
+      ],
+      "default_command": "reconstruct",
+      "session": null,
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-vggt",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": 8,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-vggt:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-vggt:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb",
+            "required": true,
+            "description": "all of identical dimensions"
+          }
+        ],
+        "out": [
+          {
+            "field": "world_points",
+            "codec": "torch",
+            "shape": "[S, H, W, 3]"
+          },
+          {
+            "field": "world_points_conf",
+            "codec": "torch",
+            "shape": "[S, H, W]"
+          },
+          {
+            "field": "depth",
+            "codec": "torch",
+            "shape": "[S, H, W, 1]"
+          },
+          {
+            "field": "depth_conf",
+            "codec": "torch",
+            "shape": "[S, H, W]"
+          },
+          {
+            "field": "extrinsic",
+            "codec": "torch",
+            "shape": "[S, 3, 4]"
+          },
+          {
+            "field": "intrinsic",
+            "codec": "torch",
+            "shape": "[S, 3, 3]"
+          },
+          {
+            "field": "images",
+            "codec": "torch",
+            "shape": "[S, 3, H, W]",
+            "description": "the preprocessed tensor the model saw"
+          },
+          {
+            "field": "glb_file",
+            "codec": "identity",
+            "shape": "binary glTF"
+          }
+        ]
+      },
+      "constraints": [
+        "Every input image must have identical dimensions; otherwise the box errors and lists the shapes.",
+        "The build downloads the VGGT-1B checkpoint (~5 GB) - the heaviest image in the registry.",
+        "Model load is async and the first call blocks until it finishes."
+      ],
+      "path": "boxes/vggt"
+    },
+    {
+      "name": "yolo",
+      "key": "yolo",
+      "version": "0.1.0",
+      "summary": "YOLO object detection with always-on tracking, on images or video",
+      "runtime": "gpu-or-cpu",
+      "status": "stable",
+      "tags": [
+        "detection",
+        "tracking"
+      ],
+      "commands": [
+        "detect",
+        "reset",
+        "list"
+      ],
+      "default_command": "detect",
+      "session": {
+        "key": "session_id",
+        "location": "section",
+        "note": "Track ids are stable within a session and restart at 1 for a fresh tracker, so they collide across sessions by design."
+      },
+      "maintainers": [
+        "jpcosteira"
+      ],
+      "image": {
+        "repository": "sipg-isr/visionist-yolo",
+        "registries": [
+          "ghcr",
+          "dockerhub"
+        ],
+        "approx_size_gb": null,
+        "refs": {
+          "ghcr": "ghcr.io/sipg-isr/visionist-yolo:0.1.0",
+          "dockerhub": "docker.io/sipgisr/visionist-yolo:0.1.0"
+        }
+      },
+      "data": {
+        "in": [
+          {
+            "field": "images",
+            "kind": "bb"
+          },
+          {
+            "field": "video",
+            "kind": "b",
+            "description": "mp4/avi/webm/mov"
+          }
+        ],
+        "out": [
+          {
+            "field": "detections",
+            "codec": "json",
+            "shape": "one record per frame",
+            "description": "frame_index, width, height, boxes [x1,y1,x2,y2], class_ids, labels, scores, track_id"
+          },
+          {
+            "field": "annotated",
+            "codec": "identity",
+            "shape": "list of JPEG bytes",
+            "when": "parameters.save_annotated"
+          },
+          {
+            "field": "annotated_video",
+            "codec": "identity",
+            "shape": "one MP4",
+            "when": "video input"
+          },
+          {
+            "field": "annotated_zip",
+            "codec": "identity",
+            "shape": "ZIP of frames + detections + manifest"
+          }
+        ]
+      },
+      "constraints": [
+        "`images` and `video` are mutually exclusive; neither gives empty_request.",
+        "conf and iou are clamped to <= 1.0.",
+        "Sessions expire (YOLO_SESSION_TTL, default 1800s)."
+      ],
+      "path": "boxes/yolo"
+    }
+  ]
+}
