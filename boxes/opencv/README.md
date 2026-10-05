@@ -17,7 +17,7 @@ service PipelineService {
 ## Directory structure
 
 ```
-opencv_box/
+opencv/
 ├── docker/
 │   └── Dockerfile
 ├── protos/
@@ -39,8 +39,8 @@ opencv_box/
 ## Build
 
 ```bash
-cd images/opencv_box
-docker build --tag sipgisr/opencvbox --build-arg SERVICE_NAME=opencv -f docker/Dockerfile .
+cd boxes/opencv
+docker build --tag sipgisr/visionist-opencv --build-arg SERVICE_NAME=opencv -f docker/Dockerfile .
 ```
 
 LightGlue (SuperPoint/DISK extractors) is installed from source in the
@@ -51,8 +51,8 @@ CPU with it present; builds without it answer a clean `error` and the
 ## Run
 
 ```bash
-docker run --rm -p 8061:8061 -e PORT=8061 sipgisr/opencvbox          # CPU
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/opencvbox
+docker run --rm -p 8061:8061 -e PORT=8061 sipgisr/visionist-opencv          # CPU
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-opencv
 ```
 
 ## Service usage
@@ -144,8 +144,8 @@ b = Visionist("localhost:8061")
 
 # --- matching ---------------------------------------------------------
 res = b.run(
-    data   = {"images": [pathlib.Path("images/opencv_box/test/00.jpg"),
-                         pathlib.Path("images/opencv_box/test/01.jpg")]},
+    data   = {"images": [pathlib.Path("boxes/opencv/test/00.jpg"),
+                         pathlib.Path("boxes/opencv/test/01.jpg")]},
     config = {"opencv": {"command": "match",
                          "parameters": {"feature_extractor": "SIFT",
                                         "max_keypoints": 1000}}},
@@ -167,10 +167,10 @@ inactivity and releases the cache, so an idle box holds no VRAM.
 
 ```bash
 # running box (standard smoke test, like the rest of the fleet)
-python images/opencv_box/test/test_opencv.py
-BOX_HOST=10.0.0.5:8061 python images/opencv_box/test/test_opencv.py
+python test/test_opencv.py
+BOX_HOST=10.0.0.5:8061 python test/test_opencv.py
 
 # no box build needed — drives src/opencv_service.py in-process
 # (needs numpy, opencv-python(-headless) locally)
-cd images/opencv_box && python test/smoke_inprocess.py
+cd boxes/opencv && python test/smoke_inprocess.py
 ```

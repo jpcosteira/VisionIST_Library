@@ -17,12 +17,12 @@ Connects to a running yolo box and:
   7. optionally, if ``YOLO_TEST_WEIGHTS`` names a fetchable checkpoint,
      exercises the ``parameters.weights`` switch (and the switch back)
 
-Mirrors the style of images/clip/test/test_clip.py.
+Mirrors the style of test/test_clip.py in the clip box.
 
 Run (from the repo or image root, server already up):
-    python images/yolo/test/test_yolo.py
-    BOX_HOST=10.0.0.5:8061 python images/yolo/test/test_yolo.py
-    YOLO_TEST_VIDEO=cozinha.mp4 python images/yolo/test/test_yolo.py
+    python test/test_yolo.py
+    BOX_HOST=10.0.0.5:8061 python test/test_yolo.py
+    YOLO_TEST_VIDEO=cozinha.mp4 python test/test_yolo.py
 """
 
 import json

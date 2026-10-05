@@ -6,16 +6,16 @@ box, with realistic staggering — some start together, others start in between.
 Each student:
   * gets a random session_id
   * resets their own session (fresh start)
-  * streams K random video frames from ./apples.mp4, one request per frame
+  * streams K random video frames from test/apple.mp4, one request per frame
   * records status, latencies, final frames_processed
 
 Isolation proof: after a run, `list` must show exactly the frames each student
 sent for their own session — no more, no less.
 
-Run (from images/tapnext_tracker/test/):
-    python live_class_sim.py
+Run (box already up, from boxes/tapnext):
+    python test/live_class_sim.py
 Env:
-    BOX_HOST    default localhost:9063
+    BOX_HOST    default localhost:8061
     STUDENTS    number of sessions, default 10
 """
 
@@ -39,7 +39,7 @@ import pipeline_pb2 as pb2      # noqa: E402
 import pipeline_pb2_grpc as pb2_grpc  # noqa: E402
 import aux                      # noqa: E402
 
-BOX_HOST = os.getenv("BOX_HOST", "localhost:9063")
+BOX_HOST = os.getenv("BOX_HOST", "localhost:8061")
 N_STUDENTS = int(os.getenv("STUDENTS", "10"))
 GRID = 16        # 16x16 = 256 tracked points per student (fast, still real tracking)
 

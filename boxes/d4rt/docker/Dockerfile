@@ -12,7 +12,8 @@
 #     weights at /weights instead.
 #
 # Build:
-#   docker build --tag sipgisr/d4rt --build-arg SERVICE_NAME=d4rt -f docker/Dockerfile .
+#   cd boxes/d4rt
+#   docker build --tag sipgisr/visionist-d4rt --build-arg SERVICE_NAME=d4rt -f docker/Dockerfile .
 #
 # Upstream is pinned by commit: this box imports helpers from the repo's
 # scripts (_infer_tracks, _infer_point_cloud_ref0, _predict_camera_branches),

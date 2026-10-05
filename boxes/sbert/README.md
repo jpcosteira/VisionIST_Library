@@ -16,7 +16,7 @@ service PipelineService {
 ## Directory structure
 
 ```
-textEmbedding/
+sbert/
 ├── docker/
 │   └── Dockerfile
 ├── protos/
@@ -35,7 +35,8 @@ textEmbedding/
 ## Build
 
 ```bash
-docker build --tag sipgisr/textembedding --build-arg SERVICE_NAME=sbert -f docker/Dockerfile .
+cd boxes/sbert
+docker build --tag sipgisr/visionist-sbert --build-arg SERVICE_NAME=sbert -f docker/Dockerfile .
 ```
 
 The first call lazily downloads the `all-MiniLM-L6-v2` weights (see `HF_HOME` /
@@ -44,7 +45,7 @@ The first call lazily downloads the `all-MiniLM-L6-v2` weights (see `HF_HOME` /
 ## Run
 
 ```bash
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/textembedding
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-sbert
 ```
 
 ## Service usage

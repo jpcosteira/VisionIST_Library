@@ -15,8 +15,8 @@ Connects to a running features box and:
   6. ``command: reset`` as a standard no-op
 
 Run (from the repo or image root, server already up):
-    python images/features_box/test/test_features.py
-    BOX_HOST=10.0.0.5:8061 python images/features_box/test/test_features.py
+    python test/test_features.py
+    BOX_HOST=10.0.0.5:8061 python test/test_features.py
 
 Note: no box build required — ``smoke_inprocess.py`` drives the same
 service code in-process (needs cv2 locally).

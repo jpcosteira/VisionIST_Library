@@ -16,7 +16,7 @@ service PipelineService {
 ## Directory structure
 
 ```
-lang_segm/
+lang_sam/
 ├── docker/
 │   └── Dockerfile
 ├── protos/
@@ -38,7 +38,8 @@ The Dockerfile clones `lang-segment-anything`
 at build time, so just build from the box root:
 
 ```bash
-docker build --tag sipgisr/lang_sam -f docker/Dockerfile .
+cd boxes/lang_sam
+docker build --tag sipgisr/visionist-lang-sam --build-arg SERVICE_NAME=lang_sam -f docker/Dockerfile .
 ```
 
 The model checkpoints (SAM 2.1 + Hiera encoder + prompter) are downloaded
@@ -49,7 +50,7 @@ lazily on first use and cached under `HF_HOME` / `TORCH_HOME`
 
 ```bash
 # GPU
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 --ipc=host sipgisr/lang_sam
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 --ipc=host sipgisr/visionist-lang-sam
 ```
 
 The box loads the model **on CPU at startup** and moves it lazily to

@@ -145,11 +145,12 @@ python src/vggt_service.py        # from the box root, PORT env as for any box
 ## Docker workflow
 
 ```bash
+cd boxes/vggt
 # build (from the vggt box root)
-docker build --tag boxes/vggt -f docker/Dockerfile .
+docker build --tag sipgisr/visionist-vggt --build-arg SERVICE_NAME=vggt -f docker/Dockerfile .
 
 # run (AI4EU spec: port 8061)
-docker run --rm --gpus all -p 8061:8061 boxes/vggt
+docker run --rm --gpus all -p 8061:8061 sipgisr/visionist-vggt
 ```
 
 ## Testing

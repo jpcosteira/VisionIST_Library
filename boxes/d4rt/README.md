@@ -21,7 +21,7 @@ query, which is why this box has three commands rather than three models.
 
 ```bash
 cd boxes/d4rt
-docker build --tag sipgisr/d4rt --build-arg SERVICE_NAME=d4rt -f docker/Dockerfile .
+docker build --tag sipgisr/visionist-d4rt --build-arg SERVICE_NAME=d4rt -f docker/Dockerfile .
 ```
 
 The build clones OpenD4RT at a **pinned commit** and bakes in the checkpoint
@@ -30,9 +30,10 @@ Face download. That makes it the heaviest image in the registry, around 12 GB.
 For a thin image with the weights mounted instead:
 
 ```bash
-docker build --tag sipgisr/d4rt --build-arg DOWNLOAD_WEIGHTS=false -f docker/Dockerfile .
+cd boxes/d4rt
+docker build --tag sipgisr/visionist-d4rt --build-arg DOWNLOAD_WEIGHTS=false --build-arg SERVICE_NAME=d4rt -f docker/Dockerfile .
 docker run --rm --gpus all -p 8061:8061 -e PORT=8061 \
-  -v /path/to/weights:/weights sipgisr/d4rt
+  -v /path/to/weights:/weights sipgisr/visionist-d4rt
 ```
 
 `/weights/<variant>/` must then hold `model.yaml` and `opend4rt.ckpt`, from
@@ -43,7 +44,7 @@ checkpoint instead of the 48-frame default.
 ## Run
 
 ```bash
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 --ipc=host sipgisr/d4rt
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 --ipc=host sipgisr/visionist-d4rt
 ```
 
 ## Service usage

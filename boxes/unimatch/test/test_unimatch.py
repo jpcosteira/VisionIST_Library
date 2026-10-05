@@ -13,8 +13,8 @@ Connects to a running unimatch box (default localhost:8061) and:
   5. ``command: reset`` (standard no-op)
 
 Run (from the repo root, server already up):
-    python images/unimatch/test/test_unimatch.py
-    BOX_HOST=10.0.0.5:8061 python images/unimatch/test/test_unimatch.py
+    python test/test_unimatch.py
+    BOX_HOST=10.0.0.5:8061 python test/test_unimatch.py
 """
 
 import io

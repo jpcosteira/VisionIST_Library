@@ -10,11 +10,12 @@ Estimates accurate 3D geometry from single images:
 ## Run the Box
 
 ```bash
+cd boxes/moge
 # 1. Build
-docker build -t moge-3-box -f docker/Dockerfile .
+docker build -t sipgisr/visionist-moge --build-arg SERVICE_NAME=moge -f docker/Dockerfile .
 
 # 2. Run (requires GPU)
-docker run --rm --gpus all -p 9067:8061 -e PORT=8061 --ipc=host moge-3-box
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 --ipc=host sipgisr/visionist-moge
 ```
 
 First run downloads the model (~2GB for moge-3-vitl) from HuggingFace.
@@ -25,7 +26,7 @@ First run downloads the model (~2GB for moge-3-vitl) from HuggingFace.
 from visionist_client import Visionist
 import pathlib
 
-box = Visionist("localhost:9067")
+box = Visionist("localhost:8061")
 
 res = box.run(
     data={"images": [pathlib.Path("image.jpg")]},
@@ -51,12 +52,12 @@ print(f"Point cloud size: {res.results[0]['points'].shape}")
 
 ```bash
 # Run the full test suite (8 tests)
-python test/test_moge_box.py
+python test/test_moge.py
 
 # With custom host
-BOX_HOST=localhost:9067 python test/test_moge_box.py
+BOX_HOST=localhost:8061 python test/test_moge.py
 
-# Ships a fixture at images/moge_box/test/test.jpg (clip box photos are also
+# Ships a fixture at boxes/moge/test/test.jpg (clip box photos are also
 # picked up automatically when running inside the repo).
 ```
 
@@ -103,7 +104,7 @@ from visionist_client import Visionist
 import pathlib
 
 # Get geometry
-moge = Visionist("localhost:9067")
+moge = Visionist("localhost:8061")
 geometry = moge.run(
     data={"images": [pathlib.Path("img.jpg")]},
     config={"moge": {"parameters": {"refine_steps": 3}}}
@@ -126,7 +127,7 @@ print(f"Scene depth range: {depth_map.min():.2f}m - {depth_map.max():.2f}m")
 
 ```bash
 # Check if box is running
-curl localhost:9067/health  # or use box.info()
+curl localhost:8061/health  # or use box.info()
 
 # View logs
 docker logs <container_id>

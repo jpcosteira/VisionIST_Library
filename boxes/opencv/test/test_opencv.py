@@ -14,8 +14,8 @@ Connects to a running opencv box and:
   5. ``command: reset`` as a standard no-op
 
 Run (from the repo or image root, server already up):
-    python images/opencv_box/test/test_opencv.py
-    BOX_HOST=10.0.0.5:8061 python images/opencv_box/test/test_opencv.py
+    python test/test_opencv.py
+    BOX_HOST=10.0.0.5:8061 python test/test_opencv.py
 
 Note: no box build required — ``smoke_inprocess.py`` drives the same
 service code in-process (needs cv2 locally).

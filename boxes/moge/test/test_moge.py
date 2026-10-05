@@ -13,9 +13,9 @@ Tests all major functionality:
 8. Error handling
 
 Usage:
-    python test/test_moge_box.py                # test localhost:8061
-    BOX_HOST=localhost:9067 python test/test_moge_box.py
-    python -m pytest test/test_moge_box.py -v   # pytest version
+    python test/test_moge.py                # test localhost:8061
+    BOX_HOST=localhost:8061 python test/test_moge.py
+    python -m pytest test/test_moge.py -v   # pytest version
 """
 
 import os
@@ -36,7 +36,7 @@ try:
     from visionist_client import Visionist
 except ImportError:
     logger.error("visionist_client not found. Install it first:")
-    logger.error("  cd ~/boxes && pip install -e visionist_client")
+    logger.error("  pip install visionist-client")
     sys.exit(1)
 
 # Test configuration
@@ -49,16 +49,14 @@ logger.info(f"Test output directory: {OUTPUT_DIR}")
 
 # Test image: the box ships its own fixture (test/test.jpg); also accept the
 # clip box photos when running inside the repo.
+_CLIP_FIXTURES = Path(__file__).resolve().parents[2] / "clip" / "test"
 COMMON_IMAGE_PATHS = [
     Path(__file__).parent / "test.jpg",
-    Path("/home/manuelf/boxes/images/clip/test/dog.jpg"),
-    Path("/home/manuelf/boxes/images/clip/test/car.jpg"),
+    _CLIP_FIXTURES / "car.jpg",
+    _CLIP_FIXTURES / "dog.jpg",
 ]
 
-TEST_IMAGE_DIRS = [
-    Path("../../images/clip/test"),
-    Path("images/clip/test"),
-]
+TEST_IMAGE_DIRS = [_CLIP_FIXTURES]
 
 
 def save_inference_results(result, input_img_path, runtime, test_name):

@@ -8,8 +8,8 @@ Connects to a running vggt box and:
   4. writes the .glb to /tmp/vggt_smoke.glb
 
 Run (server already up on :8061):
-    python images/vggt/test/test_vggt.py
-    BOX_HOST=10.0.0.5:8061 python images/vggt/test/test_vggt.py
+    python test/test_vggt.py
+    BOX_HOST=10.0.0.5:8061 python test/test_vggt.py
 """
 
 import io

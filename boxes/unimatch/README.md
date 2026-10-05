@@ -18,7 +18,7 @@ Only the **flow** checkpoint ships inside the image. `stereo` and `depth` need
 
 ```bash
 cd boxes/unimatch
-docker build --tag sipgisr/unimatch --build-arg SERVICE_NAME=unimatch -f docker/Dockerfile .
+docker build --tag sipgisr/visionist-unimatch --build-arg SERVICE_NAME=unimatch -f docker/Dockerfile .
 ```
 
 Or pull the published image:

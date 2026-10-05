@@ -53,6 +53,7 @@ from `box.yaml`. Do not maintain a list of boxes anywhere else.
 python3 tools/validate_boxes.py my_box     # schema, naming, files, fixture sizes
 python3 tools/sync_contract.py             # refresh protos/
 python3 tools/build_index.py               # regenerate index, README, CODEOWNERS
+python3 tools/check_docs.py my_box         # your README builds and runs the way CI does
 ```
 
 Then build it and run the shared contract test:

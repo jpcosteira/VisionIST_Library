@@ -52,7 +52,8 @@ yolo/
 ## Build
 
 ```bash
-docker build --tag sipgisr/yolo --build-arg SERVICE_NAME=yolo -f docker/Dockerfile .
+cd boxes/yolo
+docker build --tag sipgisr/visionist-yolo --build-arg SERVICE_NAME=yolo -f docker/Dockerfile .
 ```
 
 **No checkpoint is baked into the image.** The default weights download at
@@ -64,7 +65,7 @@ same pattern as clip's startup ViT download. Pick a different default with
 ## Run
 
 ```bash
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/yolo
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-yolo
 ```
 
 ## Service usage

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Test script for the SBERT gRPC service (shared envelope interface).
 
-Connects to a running textEmbedding box and:
+Connects to a running sbert box and:
   1. builds an Envelope with sample sentences in ``data.texts``
   2. calls ``stub.Process(request)``
   3. loads and prints the shape of ``embeddings`` / ``similarities``
      and the sentence-similarity matrix
 
-Mirrors the style of images/clip/test/test_clip.py.
+Mirrors the style of test/test_clip.py in the clip box.
 
 Run (from the repo or image root, server already up):
-    python images/textEmbedding/test/test_sbert.py
-    BOX_HOST=10.0.0.5:8061 python images/textEmbedding/test/test_sbert.py
+    python test/test_sbert.py
+    BOX_HOST=10.0.0.5:8061 python test/test_sbert.py
 """
 
 import json

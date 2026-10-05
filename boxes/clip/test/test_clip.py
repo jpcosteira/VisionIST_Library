@@ -9,11 +9,11 @@ Connects to a running clip box and:
   3. loads and prints the shape of image_emb / text_emb / similarity
      and the per-image similarity logits
 
-Mirrors the style of images/tapnext_tracker/test/test_tapnext.py.
+Mirrors the style of test/test_tapnext.py in the tapnext box.
 
 Run (from the repo or image root, server already up):
-    python images/clip/test/test_clip.py
-    BOX_HOST=10.0.0.5:8061 python images/clip/test/test_clip.py
+    python test/test_clip.py
+    BOX_HOST=10.0.0.5:8061 python test/test_clip.py
 """
 
 import json

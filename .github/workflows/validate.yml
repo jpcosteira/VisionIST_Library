@@ -21,6 +21,8 @@ jobs:
         run: python3 tools/sync_contract.py --check
       - name: index.json, README table, .gitignore asset list, CODEOWNERS are current
         run: python3 tools/build_index.py --check
+      - name: Build, run and test instructions follow the protocol
+        run: python3 tools/check_docs.py
 
   select:
     name: which boxes changed

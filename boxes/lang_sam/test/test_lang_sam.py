@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test script for the LangSAM (lang_segm) gRPC service (shared envelope).
+"""Test script for the LangSAM (lang_sam) gRPC service (shared envelope).
 
 Connects to a running lang_sam box and:
   1. builds an Envelope with the two photos bundled in the clip box's
@@ -9,11 +9,11 @@ Connects to a running lang_sam box and:
   3. decodes data["results"] (zstd + pickle) and prints the per-image
      masks / bboxes / scores
 
-Mirrors the style of images/clip/test/test_clip.py.
+Mirrors the style of test/test_clip.py in the clip box.
 
 Run (server already up on :8061):
-    python images/lang_segm/test/test_lang_sam.py
-    BOX_HOST=10.0.0.5:8061 python images/lang_segm/test/test_lang_sam.py
+    python test/test_lang_sam.py
+    BOX_HOST=10.0.0.5:8061 python test/test_lang_sam.py
 """
 
 import io

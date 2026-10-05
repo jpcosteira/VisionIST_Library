@@ -87,7 +87,15 @@ def main() -> int:
 
     readme = dest / "README.md"
     if readme.is_file():
-        readme.write_text(readme.read_text().replace("template", name))
+        image = f"sipgisr/visionist-{name.replace('_', '-')}"
+        text = (readme.read_text()
+                .replace("sipgisr/visionist-template", image)
+                .replace("SERVICE_NAME=template", f"SERVICE_NAME={key}")
+                .replace('"template"', f'"{key}"')
+                .replace("template", name))
+        if args.runtime in ("gpu", "cuda-only"):
+            text = text.replace("docker run --rm -p", "docker run --rm --gpus all -p")
+        readme.write_text(text)
 
     subprocess.run([sys.executable, str(root / "tools" / "sync_contract.py")],
                    check=False, capture_output=True)

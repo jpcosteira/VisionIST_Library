@@ -24,7 +24,7 @@ service PipelineService {
 ## Directory structure
 
 ```
-lightglue_box/
+lightglue/
 ├── docker/
 │   └── Dockerfile
 ├── protos/
@@ -46,8 +46,8 @@ lightglue_box/
 ## Build
 
 ```bash
-cd images/lightglue_box
-docker build --tag sipgisr/lightgluebox --build-arg SERVICE_NAME=lightglue -f docker/Dockerfile .
+cd boxes/lightglue
+docker build --tag sipgisr/visionist-lightglue --build-arg SERVICE_NAME=lightglue -f docker/Dockerfile .
 ```
 
 LightGlue is installed from source in the image (it is not on PyPI); the
@@ -56,8 +56,8 @@ SuperPoint / DISK extractors and the matcher come with it.
 ## Run
 
 ```bash
-docker run --rm -p 8061:8061 -e PORT=8061 sipgisr/lightgluebox          # CPU
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/lightgluebox
+docker run --rm -p 8061:8061 -e PORT=8061 sipgisr/visionist-lightglue          # CPU
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-lightglue
 ```
 
 ## Service usage
@@ -244,10 +244,10 @@ own TTL (`LIGHTGLUE_SESSION_TTL`, default 1800 s).
 
 ```bash
 # running box (standard smoke test, like the rest of the fleet)
-python images/lightglue_box/test/test_lightglue.py
-BOX_HOST=10.0.0.5:8061 python images/lightglue_box/test/test_lightglue.py
+python test/test_lightglue.py
+BOX_HOST=10.0.0.5:8061 python test/test_lightglue.py
 
 # no box build needed — drives src/lightglue_service.py in-process
 # (needs numpy, opencv-python(-headless), torch, lightglue)
-cd images/lightglue_box && python test/smoke_inprocess.py
+cd boxes/lightglue && python test/smoke_inprocess.py
 ```

@@ -17,7 +17,7 @@ progress in the returned coordinates, so any cross-session leakage is visible
 in the numbers.
 
 Run:
-    cd images/tapnext_tracker/test && python test_tapnext_sessions.py
+    cd boxes/tapnext && python test/test_tapnext_sessions.py
 """
 
 import io

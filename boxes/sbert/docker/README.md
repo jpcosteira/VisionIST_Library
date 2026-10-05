@@ -13,7 +13,7 @@ Also, it is already built with the necessary sources for the gRPC service to run
 In order to use the images, execute the following command:
 
 ```shell
-$ docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/textembedding
+$ docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-sbert
 ```
 
 NOTE: The `<path to optional host directory>` must be the absolute path to some directory needed to run the service (it is optional).
@@ -28,5 +28,6 @@ In order to build the image, execute the respective command *(from the box root
 directory, i.e. this folder's parent)*:
 
 ```shell
-$ docker build --tag sipgisr/textembedding --build-arg SERVICE_NAME=sbert -f docker/Dockerfile .
+$ cd boxes/sbert
+$ docker build --tag sipgisr/visionist-sbert --build-arg SERVICE_NAME=sbert -f docker/Dockerfile .
 ```

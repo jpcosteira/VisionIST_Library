@@ -34,7 +34,8 @@ clip/
 ## Build
 
 ```bash
-docker build --tag sipgisr/clip --build-arg SERVICE_NAME=clip -f docker/Dockerfile .
+cd boxes/clip
+docker build --tag sipgisr/visionist-clip --build-arg SERVICE_NAME=clip -f docker/Dockerfile .
 ```
 
 The first call lazily downloads the `ViT-B/32` weights (see `HF_HOME` /
@@ -43,7 +44,7 @@ The first call lazily downloads the `ViT-B/32` weights (see `HF_HOME` /
 ## Run
 
 ```bash
-docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/clip
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-clip
 ```
 
 ## Service usage

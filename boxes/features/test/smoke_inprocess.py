@@ -1,7 +1,7 @@
 """Ad-hoc in-process smoke test for the features service (no box build
 needed): instantiate the servicer and drive Process() with envelopes.
 
-    cd images/features_box && python test/smoke_inprocess.py
+    cd boxes/features && python test/smoke_inprocess.py
 
 Needs numpy, opencv-python(-headless) and (for the .mat case) scipy locally.
 """

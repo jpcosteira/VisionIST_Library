@@ -24,7 +24,7 @@ and holds no VRAM.
 ## Directory structure
 
 ```
-features_box/
+features/
 ├── docker/
 │   └── Dockerfile
 ├── protos/
@@ -46,8 +46,8 @@ features_box/
 ## Build
 
 ```bash
-cd images/features_box
-docker build --tag sipgisr/featuresbox --build-arg SERVICE_NAME=features -f docker/Dockerfile .
+cd boxes/features
+docker build --tag sipgisr/visionist-features --build-arg SERVICE_NAME=features -f docker/Dockerfile .
 ```
 
 Small image: `opencv-contrib-python-headless` + `scipy` + grpc, no torch and
@@ -56,7 +56,7 @@ no model weights.
 ## Run
 
 ```bash
-docker run --rm -p 8061:8061 -e PORT=8061 sipgisr/featuresbox
+docker run --rm -p 8061:8061 -e PORT=8061 sipgisr/visionist-features
 ```
 
 ## Service usage
@@ -166,8 +166,8 @@ import pathlib
 b = Visionist("localhost:8061")          # 9071 for the fleet's compose mapping
 
 res = b.run(
-    data   = {"images": [pathlib.Path("images/features_box/test/00.jpg"),
-                         pathlib.Path("images/features_box/test/01.jpg")],
+    data   = {"images": [pathlib.Path("boxes/features/test/00.jpg"),
+                         pathlib.Path("boxes/features/test/01.jpg")],
               "names":  ["00.jpg", "01.jpg"]},
     config = {"features": {"command": "extract",
                            "parameters": {"nfeatures": 500, "mat": True}}},
@@ -192,11 +192,11 @@ xy   = kp(1:2, :);    % coordinates
 desc = kp(3:end, :);  % descriptors
 ```
 
-## Relation to `opencv_box`
+## Relation to the `opencv` box
 
 Both boxes run SIFT, but they answer different questions:
 
-| | `features_box` | `opencv_box` |
+| | `features` | `opencv` |
 |---|---|---|
 | Question | "give me this image's SIFT features, in the SIFT-Extractor layout" | "match these two images" |
 | Layout | one `(2 + 128, N)` matrix (`kp`), MATLAB-compatible | separate `keypoints` `(N, 2)` + `descriptors` `(N, 128)` |
@@ -208,12 +208,12 @@ Both boxes run SIFT, but they answer different questions:
 
 ```bash
 # running box (standard smoke test, like the rest of the fleet)
-python images/features_box/test/test_features.py
-BOX_HOST=10.0.0.5:8061 python images/features_box/test/test_features.py
+python test/test_features.py
+BOX_HOST=10.0.0.5:8061 python test/test_features.py
 
 # no box build needed — drives src/features_service.py in-process
 # (needs numpy, opencv-python(-headless) and scipy locally)
-cd images/features_box && python test/smoke_inprocess.py
+cd boxes/features && python test/smoke_inprocess.py
 ```
 
 Both were checked against the original CLI: for the bundled fixtures the

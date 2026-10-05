@@ -9,8 +9,8 @@ shows up as a large coordinate difference.
 Runs the two sessions INTERLEAVED (A0, B0, A1, B1, ...) so it also exercises
 the concurrent path, not just sequential.
 
-Run (from images/tapnext_tracker/test/):
-    python equivalence_check.py
+Run (box already up, from boxes/tapnext):
+    python test/equivalence_check.py
 """
 
 import io
@@ -30,7 +30,7 @@ import pipeline_pb2 as pb2            # noqa: E402
 import pipeline_pb2_grpc as pb2_grpc  # noqa: E402
 import aux                            # noqa: E402
 
-BOX_HOST = os.getenv("BOX_HOST", "localhost:9063")
+BOX_HOST = os.getenv("BOX_HOST", "localhost:8061")
 N = int(os.getenv("EQ_FRAMES", "8"))   # same frames for both sessions
 GRID = 16
 

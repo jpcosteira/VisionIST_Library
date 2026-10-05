@@ -1,7 +1,7 @@
 """In-process smoke test for the lightglue service (no box build needed):
 instantiate the servicer and drive Process() with envelopes.
 
-cd images/lightglue_box && python test/smoke_inprocess.py
+cd boxes/lightglue && python test/smoke_inprocess.py
 (needs numpy, opencv-python(-headless), torch, lightglue)
 """
 import io

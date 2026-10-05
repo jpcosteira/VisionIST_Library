@@ -10,8 +10,8 @@ Connects to a running lightglue box (default localhost:8061) and:
   5. ``command: reset`` (standard no-op)
 
 Run (from the repo root, server already up):
-    python images/lightglue_box/test/test_lightglue.py
-    BOX_HOST=10.0.0.5:8061 python images/lightglue_box/test/test_lightglue.py
+    python test/test_lightglue.py
+    BOX_HOST=10.0.0.5:8061 python test/test_lightglue.py
 """
 
 import io

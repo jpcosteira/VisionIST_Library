@@ -2,7 +2,7 @@
 
 ## Location
 
-All inference outputs are saved to: `images/moge_box/test_output/`
+All inference outputs are saved to: `boxes/moge/test_output/`
 
 Each test run creates a timestamped directory:
 ```

@@ -13,7 +13,7 @@ clients are written against this page.
 
 ```bash
 cd boxes/template
-docker build --tag sipgisr/template --build-arg SERVICE_NAME=template -f docker/Dockerfile .
+docker build --tag sipgisr/visionist-template --build-arg SERVICE_NAME=template -f docker/Dockerfile .
 ```
 
 Or pull the published image:

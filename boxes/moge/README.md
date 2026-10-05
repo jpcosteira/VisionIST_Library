@@ -18,23 +18,23 @@
 ### Run the box
 
 ```bash
-cd images/moge_box
+cd boxes/moge
 
 # Build
-docker build -t moge-3-box -f docker/Dockerfile .
+docker build -t sipgisr/visionist-moge --build-arg SERVICE_NAME=moge -f docker/Dockerfile .
 
 # Run (GPU required for inference)
-docker run --rm --gpus all -p 9067:8061 -e PORT=8061 --ipc=host moge-3-box
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 --ipc=host sipgisr/visionist-moge
 ```
 
 ### Test it
 
 ```bash
 # Full test suite (8 tests)
-python test/test_moge_box.py
+python test/test_moge.py
 
 # Or with custom host
-BOX_HOST=localhost:9067 python test/test_moge_box.py
+BOX_HOST=localhost:8061 python test/test_moge.py
 ```
 
 ---
@@ -117,7 +117,7 @@ The `encoding` field in response config declares `"zstd_pickle"` so the client a
 from visionist_client import Visionist
 import pathlib
 
-box = Visionist("localhost:9067")
+box = Visionist("localhost:8061")
 
 res = box.run(
     data={"images": [pathlib.Path("image.jpg")]},
@@ -253,7 +253,7 @@ pip install opencv-python zstandard
 ### Run Locally
 
 ```bash
-cd images/moge_box
+cd boxes/moge
 python src/moge_service.py
 ```
 
@@ -347,16 +347,16 @@ from visionist_client import Visionist
 import pathlib
 
 # 1. Get embeddings for text prompts
-clip_box = Visionist("localhost:9061")  # clip box
-clip_res = clip_box.run(
+clip = Visionist("localhost:9061")  # clip box
+clip_res = clip.run(
     data={"images": [pathlib.Path("image.jpg")],
           "texts": ["building", "tree", "person"]},
     config={"clip": {"command": "encode"}}
 )
 
 # 2. Get geometry from image
-moge_box = Visionist("localhost:9067")
-moge_res = moge_box.run(
+moge = Visionist("localhost:9067")
+moge_res = moge.run(
     data={"images": [pathlib.Path("image.jpg")]},
     config={"moge": {"parameters": {"refine_steps": 3}}}
 )
@@ -373,4 +373,4 @@ points = moge_res.results[0]["points"]
 - Try the Gradio demo: `moge app --version v3 --pretrained Ruicheng/moge-3-vitl`
 - Experiment with `resolution_level` [0-9] to balance speed/quality
 - Combine with `vggt` box for multi-view 3D reconstruction
-- Use `opencv_box` for camera intrinsics estimation if FOV unknown
+- Use the `opencv` box for camera intrinsics estimation if FOV unknown

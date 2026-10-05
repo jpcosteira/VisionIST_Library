@@ -19,7 +19,7 @@ A gRPC service for TAPNext point tracking with streaming support, following the 
 ## Directory Structure
 
 ```
-tapnext_tracker/
+tapnext/
 ├── docker/
 │   └── Dockerfile
 ├── protos/
@@ -46,7 +46,8 @@ wget https://storage.googleapis.com/dm-tapnet/tapnext/bootstapnext_ckpt.npz
 Build without checkpoint (service checks for checkpoint at runtime):
 
 ```bash
-docker build --tag sipgisr/tapnexttracker \
+cd boxes/tapnext
+docker build --tag sipgisr/visionist-tapnext \
     --build-arg SERVICE_NAME=tapnext \
     -f docker/Dockerfile .
 ```
@@ -54,8 +55,9 @@ docker build --tag sipgisr/tapnexttracker \
 Or mount the checkpoint at runtime:
 
 ```bash
-docker run -v /path/to/checkpoint:/workspace/bootstapnext_ckpt.npz \
-    sipgisr/tapnexttracker
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 \
+    -v /path/to/checkpoint:/workspace/bootstapnext_ckpt.npz \
+    sipgisr/visionist-tapnext
 ```
 
 ## Service Usage
@@ -267,18 +269,19 @@ Response data contains:
 ### Local Development
 
 ```bash
-docker build --tag tapnexttracker -f docker/Dockerfile .
-docker run --gpus all -p 8061:8061 tapnexttracker
+cd boxes/tapnext
+docker build --tag sipgisr/visionist-tapnext --build-arg SERVICE_NAME=tapnext -f docker/Dockerfile .
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 sipgisr/visionist-tapnext
 ```
 
 ### Production with GPU
 
 ```bash
-docker run --gpus all \
+docker run -d --gpus all -p 8061:8061 \
     -v /path/to/checkpoint:/workspace/bootstapnext_ckpt.npz \
     -e PORT=8061 \
-    --name tapnext tracker \
-    tapnexttracker
+    --name tapnext \
+    sipgisr/visionist-tapnext
 ```
 
 ## Environment Variables
@@ -311,14 +314,13 @@ Two test entry points:
 # Injects a deterministic stub model and exercises Process() directly (plus a
 # real gRPC round-trip). This is the fastest way to prove multi-session
 # isolation/regression.
-cd images/tapnext_tracker/test
-python test_tapnext_sessions.py
+cd boxes/tapnext
+python test/test_tapnext_sessions.py
 
 # Live smoke test against a running box (needs the real image + a GPU):
-docker build --tag my_tapnext -f docker/Dockerfile .
-docker run --rm --gpus all -p 8061:8061 -v /path/to/ckpt:/workspace/bootstapnext_ckpt.npz my_tapnext &
-cd images/tapnext_tracker/test
-python test_tapnext.py          # sequential tracking over gRPC
+docker build --tag sipgisr/visionist-tapnext --build-arg SERVICE_NAME=tapnext -f docker/Dockerfile .
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 -v /path/to/ckpt:/workspace/bootstapnext_ckpt.npz sipgisr/visionist-tapnext &
+python test/test_tapnext.py          # sequential tracking over gRPC
 ```
 
 ## Troubleshooting
@@ -328,7 +330,9 @@ python test_tapnext.py          # sequential tracking over gRPC
 Ensure checkpoint is at `/workspace/bootstapnext_ckpt.npz`:
 
 ```bash
-docker run -v /path/to/checkpoint:/workspace/bootstapnext_ckpt.npz tapnexttracker
+docker run --rm --gpus all -p 8061:8061 -e PORT=8061 \
+    -v /path/to/checkpoint:/workspace/bootstapnext_ckpt.npz \
+    sipgisr/visionist-tapnext
 ```
 
 ### CUDA Out of Memory
