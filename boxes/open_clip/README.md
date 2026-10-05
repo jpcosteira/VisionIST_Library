@@ -42,8 +42,27 @@ mounted `/workspace/.cache`). Runtime environment variables:
 | `OPEN_CLIP_CACHE_SIZE` | `1` | models kept loaded; the least recently used is evicted |
 | `OPEN_CLIP_IDLE_SECONDS` | `60` | idle time before GPU models move back to CPU (`0` disables) |
 
-It runs on a CPU, only much more slowly. Larger models (ViT-L, ViT-H, SigLIP-SO400M)
-want a GPU and more memory.
+It runs on a CPU, only much more slowly.
+
+### Big models
+
+Any open_clip model works, including ViT-L-14, ViT-H-14, ViT-bigG-14, EVA02-E and
+the SigLIP family; what limits you is memory. The box runs in **fp32**, so the
+weights alone take roughly 4 bytes per parameter, on the GPU while a request runs
+and in host RAM before and after (a model is always loaded on CPU first):
+
+| model | parameters | weights in fp32 |
+|---|---|---|
+| ViT-B-32 | 151 M | 0.6 GB |
+| ViT-L-14 | 428 M | 1.7 GB |
+| ViT-H-14 | ~1.0 B | ~3.9 GB |
+| ViT-bigG-14 | ~2.5 B | ~10 GB |
+
+ViT-L-14 fits any recent GPU. ViT-H-14 wants roughly 8 GB or more, and ViT-bigG-14
+or EVA02-E-14-plus a 24 GB card. `OPEN_CLIP_CACHE_SIZE=1` keeps only one model
+resident, so alternating models reloads each time. The first request for a model
+downloads it (ViT-L-14 about 1.7 GB), so it is slow. SigLIP models additionally
+need `transformers` and `sentencepiece`, which are in `requirements.txt`.
 
 ## Service usage
 

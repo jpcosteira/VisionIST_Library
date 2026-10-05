@@ -8,6 +8,9 @@ torchvision==0.18.1
 numpy==1.26.4
 open_clip_torch==3.3.0
 timm
+# SigLIP-family models tokenise through Hugging Face tokenizers
+transformers==4.57.6
+sentencepiece
 Pillow
 huggingface_hub
 safetensors

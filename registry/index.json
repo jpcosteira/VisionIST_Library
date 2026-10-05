@@ -608,6 +608,7 @@
         "A model other than the default that is not already cached is downloaded from Hugging Face on first use, so that request is slow and the box needs network access to huggingface.co (or a mounted /workspace/.cache).",
         "Embeddings from different models or pretrained tags are not comparable with each other, only with embeddings from the same pair.",
         "Unlike the `clip` box, embeddings are unit length by default and use the numpy codec (no torch needed on the client).",
+        "The box runs in fp32 (about 4 bytes per parameter): ViT-L-14 needs ~1.7 GB, ViT-H-14 ~3.9 GB, ViT-bigG-14 ~10 GB, on the GPU while a request runs and in host RAM when loaded. There is no fp16 option yet.",
         "Texts longer than the model's context (usually 77 tokens) are truncated by open_clip.",
         "Command `models` lists open_clip's registry of (model, pretrained) pairs; it does not check that a download will succeed."
       ],
