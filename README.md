@@ -1,6 +1,12 @@
+
 # VisionIST Library
 
-A registry of **boxes**: independent, Dockerized inference services that all
+
+
+This is a companion repository of SIPG/ISR's 
+[VisionIST](https://github.com/jpcosteira/VisionIST). Together with [VisionIST_matlab](https://github.com/jpcosteira/VisionIST_matlab) allows the local buildup of any type of pipeline using components with specifications of the  ["AI-on-Demand"](http://aiod.eu) platform. We call such components **boxes**.
+
+**VisionIST_Library** is the registry of **boxes**: independent, Dockerized inference services that all
 speak one gRPC envelope. Contribute a box here; assemble a fleet from it
 anywhere.
 
@@ -14,15 +20,18 @@ source, a manifest. The **images** live in a container registry (Docker Hub,
 cloning the registry is not a prerequisite for using it.
 
 The client, the webui, the docs and a reference fleet live in
-[VisionIST](https://github.com/jpcosteira/VisionIST).
+[VisionIST](https://github.com/jpcosteira/VisionIST). Together with VisionIST_Matlab
 
+Visit our  [Docker Hub repositories](https://hub.docker.com/repositories/sipgisr). VisionIST componentes are named sipgisr/visionist-name-of-the-box
 ## Use a box
 
 ```bash
-docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip:0.1.0
+docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip
 # or, from Docker Hub:
-docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip:0.1.0
+docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip
 ```
+
+**Call a box with the VisionIST** client (see each box definitions to tailor the client call) 
 
 ```python
 from visionist_client import Visionist
