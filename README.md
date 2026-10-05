@@ -9,17 +9,17 @@ service PipelineService { rpc Process( Envelope ) returns ( Envelope ); }
 ```
 
 This repository holds **recipes and metadata** — a Dockerfile, the service
-source, a manifest. The **images** live in a container registry (GHCR and
-Docker Hub). So running a fleet never means building a hundred boxes, and
+source, a manifest. The **images** live in a container registry (Docker Hub,
+`sipgisr/`). So running a fleet never means building a hundred boxes, and
 cloning the registry is not a prerequisite for using it.
 
 The client, the webui, the docs and a reference fleet live in
-[VisionIST](https://github.com/sipg-isr/VisionIST).
+[VisionIST](https://github.com/jpcosteira/VisionIST).
 
 ## Use a box
 
 ```bash
-docker run --rm -p 8061:8061 -e PORT=8061 ghcr.io/sipg-isr/visionist-clip:0.1.0
+docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip:0.1.0
 # or, from Docker Hub:
 docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip:0.1.0
 ```

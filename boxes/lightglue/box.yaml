@@ -13,9 +13,8 @@ tags:
 - matching
 - tracking
 image:
-  repository: sipg-isr/visionist-lightglue
+  repository: sipgisr/visionist-lightglue
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

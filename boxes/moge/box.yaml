@@ -13,9 +13,8 @@ tags:
 - geometry
 - monocular
 image:
-  repository: sipg-isr/visionist-moge
+  repository: sipgisr/visionist-moge
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

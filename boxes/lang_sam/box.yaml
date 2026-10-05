@@ -13,9 +13,8 @@ tags:
 - language
 - grounding
 image:
-  repository: sipg-isr/visionist-lang-sam
+  repository: sipgisr/visionist-lang-sam
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

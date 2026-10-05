@@ -70,7 +70,7 @@ def main() -> int:
                "repository": manifests[n]["image"]["repository"],
                "version": manifests[n]["version"],
                "registries": ",".join(manifests[n]["image"].get(
-                   "registries", ["ghcr", "dockerhub"])),
+                   "registries", ["dockerhub"])),
                "context": f"boxes/{n}",
                "key": manifests[n]["key"]} for n in selected]
     print(json.dumps({"box": matrix}))

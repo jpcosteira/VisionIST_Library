@@ -13,9 +13,8 @@ tags:
 - classical
 - sift
 image:
-  repository: sipg-isr/visionist-features
+  repository: sipgisr/visionist-features
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

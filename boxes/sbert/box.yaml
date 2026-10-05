@@ -12,9 +12,8 @@ tags:
 - embeddings
 - text
 image:
-  repository: sipg-isr/visionist-sbert
+  repository: sipgisr/visionist-sbert
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

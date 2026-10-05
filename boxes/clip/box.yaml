@@ -12,9 +12,8 @@ tags:
 - embeddings
 - multimodal
 image:
-  repository: sipg-isr/visionist-clip
+  repository: sipgisr/visionist-clip
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

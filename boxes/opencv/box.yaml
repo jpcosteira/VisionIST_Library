@@ -14,9 +14,8 @@ tags:
 - matching
 - classical
 image:
-  repository: sipg-isr/visionist-opencv
+  repository: sipgisr/visionist-opencv
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

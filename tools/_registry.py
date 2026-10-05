@@ -54,12 +54,12 @@ def load_all(root: pathlib.Path) -> list[dict]:
     return [load_manifest(d) for d in box_dirs(root)]
 
 
-def image_ref(manifest: dict, registry: str = "ghcr",
+def image_ref(manifest: dict, registry: str = "dockerhub",
               version: str | None = None) -> str:
     """Full pullable reference for a box on one registry.
 
     ``ghcr`` keeps the repository path as given; ``dockerhub`` flattens it,
-    because Docker Hub has exactly one level of namespace - sipg-isr/visionist-clip
+    because Docker Hub has exactly one level of namespace - sipgisr/visionist-clip
     becomes sipgisr/visionist-clip.
     """
     if registry not in REGISTRY_HOSTS:
@@ -74,4 +74,4 @@ def image_ref(manifest: dict, registry: str = "ghcr",
 
 
 def registries_of(manifest: dict) -> list[str]:
-    return manifest.get("image", {}).get("registries") or ["ghcr", "dockerhub"]
+    return manifest.get("image", {}).get("registries") or ["dockerhub"]

@@ -24,14 +24,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-clip",
+        "repository": "sipgisr/visionist-clip",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-clip:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-clip:0.1.0"
         }
       },
@@ -102,14 +100,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-d4rt",
+        "repository": "sipgisr/visionist-d4rt",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": 12,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-d4rt:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-d4rt:0.1.0"
         }
       },
@@ -255,14 +251,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-features",
+        "repository": "sipgisr/visionist-features",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-features:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-features:0.1.0"
         }
       },
@@ -335,14 +329,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-lang-sam",
+        "repository": "sipgisr/visionist-lang-sam",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-lang-sam:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-lang-sam:0.1.0"
         }
       },
@@ -399,14 +391,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-lightglue",
+        "repository": "sipgisr/visionist-lightglue",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-lightglue:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-lightglue:0.1.0"
         }
       },
@@ -502,14 +492,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-moge",
+        "repository": "sipgisr/visionist-moge",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-moge:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-moge:0.1.0"
         }
       },
@@ -559,14 +547,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-opencv",
+        "repository": "sipgisr/visionist-opencv",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-opencv:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-opencv:0.1.0"
         }
       },
@@ -639,14 +625,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-sbert",
+        "repository": "sipgisr/visionist-sbert",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-sbert:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-sbert:0.1.0"
         }
       },
@@ -707,14 +691,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-tapnext",
+        "repository": "sipgisr/visionist-tapnext",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-tapnext:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-tapnext:0.1.0"
         }
       },
@@ -784,14 +766,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-unimatch",
+        "repository": "sipgisr/visionist-unimatch",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-unimatch:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-unimatch:0.1.0"
         }
       },
@@ -876,14 +856,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-vggt",
+        "repository": "sipgisr/visionist-vggt",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": 8,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-vggt:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-vggt:0.1.0"
         }
       },
@@ -973,14 +951,12 @@
         "jpcosteira"
       ],
       "image": {
-        "repository": "sipg-isr/visionist-yolo",
+        "repository": "sipgisr/visionist-yolo",
         "registries": [
-          "ghcr",
           "dockerhub"
         ],
         "approx_size_gb": null,
         "refs": {
-          "ghcr": "ghcr.io/sipg-isr/visionist-yolo:0.1.0",
           "dockerhub": "docker.io/sipgisr/visionist-yolo:0.1.0"
         }
       },

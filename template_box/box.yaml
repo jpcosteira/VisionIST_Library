@@ -19,8 +19,8 @@ runtime: cpu                        # cpu | gpu-or-cpu | gpu | cuda-only
 tags: [template]                    # free-form; tags, not directories
 
 image:
-  repository: sipg-isr/visionist-template   # no registry host: the fleet generator adds it
-  registries: [ghcr, dockerhub]
+  repository: sipgisr/visionist-template   # no registry host: the fleet generator adds it
+  registries: [dockerhub]
   platforms: [linux/amd64]
   # approx_size_gb: 1               # rough pulled size, if you know it
 

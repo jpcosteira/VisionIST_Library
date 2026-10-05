@@ -1,0 +1,67 @@
+name: publish box
+
+# Tag <box>-v<version> (e.g. clip-v0.2.0) to publish one box.
+# Boxes version independently; the tag must agree with boxes/<box>/box.yaml.
+on:
+  push:
+    tags: ["*-v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r tools/requirements.txt
+
+      - name: Resolve the tag against the manifest
+        id: meta
+        run: |
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, "tools")
+          from _registry import repo_root, load_manifest, image_ref, registries_of
+          tag = os.environ["GITHUB_REF_NAME"]
+          box, _, version = tag.rpartition("-v")
+          d = repo_root() / "boxes" / box
+          if not (d / "box.yaml").is_file():
+              sys.exit(f"tag {tag}: no such box {box!r}")
+          m = load_manifest(d)
+          if m["version"] != version:
+              sys.exit(f"tag {tag} says {version} but boxes/{box}/box.yaml says {m['version']}")
+          tags = [image_ref(m, r) for r in registries_of(m)]
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          out.write(f"box={box}\nkey={m['key']}\n")
+          out.write(f"platforms={','.join(m['image'].get('platforms', ['linux/amd64']))}\n")
+          out.write("tags<<EOF\n" + "\n".join(tags) + "\nEOF\n")
+          out.write(f"dockerhub={'true' if 'dockerhub' in registries_of(m) else 'false'}\n")
+          out.write(f"ghcr={'true' if 'ghcr' in registries_of(m) else 'false'}\n")
+          PY
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - if: steps.meta.outputs.ghcr == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - if: steps.meta.outputs.dockerhub == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: boxes/${{ steps.meta.outputs.box }}
+          file: boxes/${{ steps.meta.outputs.box }}/docker/Dockerfile
+          build-args: SERVICE_NAME=${{ steps.meta.outputs.key }}
+          platforms: ${{ steps.meta.outputs.platforms }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}

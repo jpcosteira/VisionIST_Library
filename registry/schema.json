@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/sipg-isr/VisionIST_Library/registry/schema.json",
+  "$id": "https://github.com/jpcosteira/VisionIST_Library/registry/schema.json",
   "title": "VisionIST box manifest",
   "description": "box.yaml - the registry entry for one box. Everything downstream (the index, the README table, the CI build matrix, the webui definition, the fleet generator) is generated from these, so nothing is maintained by hand twice.",
   "type": "object",
@@ -43,13 +43,13 @@
         "repository": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9._/-]*$",
-          "description": "Image path WITHOUT a registry host, e.g. sipg-isr/visionist-clip. The fleet generator prefixes the registry the user picked."
+          "description": "Image path WITHOUT a registry host, e.g. sipgisr/visionist-clip. The fleet generator prefixes the registry the user picked."
         },
         "registries": {
           "type": "array",
           "items": {"type": "string", "enum": ["ghcr", "dockerhub"]},
           "minItems": 1,
-          "default": ["ghcr", "dockerhub"],
+          "default": ["dockerhub"],
           "description": "Where CI publishes this box. A box present on only one registry is still usable - the fleet generator falls back per box."
         },
         "platforms": {

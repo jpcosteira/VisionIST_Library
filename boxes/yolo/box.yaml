@@ -12,9 +12,8 @@ tags:
 - detection
 - tracking
 image:
-  repository: sipg-isr/visionist-yolo
+  repository: sipgisr/visionist-yolo
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

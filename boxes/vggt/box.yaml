@@ -13,9 +13,8 @@ tags:
 - geometry
 - multiview
 image:
-  repository: sipg-isr/visionist-vggt
+  repository: sipgisr/visionist-vggt
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

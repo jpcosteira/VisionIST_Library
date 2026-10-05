@@ -6,7 +6,7 @@ CODEOWNERS is generated from your manifest, so you review changes to it.
 ## Start
 
 ```bash
-git clone https://github.com/sipg-isr/VisionIST_Library
+git clone https://github.com/jpcosteira/VisionIST_Library
 cd VisionIST_Library
 pip install -r tools/requirements.txt
 
@@ -96,7 +96,7 @@ git tag my_box-v0.2.0 && git push origin my_box-v0.2.0
 ```
 
 CI refuses the tag if it disagrees with the manifest, then builds and pushes
-to GHCR and Docker Hub. Boxes version independently — your release does not
+to Docker Hub (`sipgisr/`). Boxes version independently — your release does not
 move anyone else's.
 
 ## Asking for the contract to change

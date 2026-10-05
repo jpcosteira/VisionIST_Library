@@ -13,9 +13,8 @@ tags:
 - points
 - sfm
 image:
-  repository: sipg-isr/visionist-tapnext
+  repository: sipgisr/visionist-tapnext
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64

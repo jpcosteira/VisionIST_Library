@@ -71,8 +71,8 @@ def main() -> int:
                          "for the registry table", f"summary: {args.summary}")
                 .replace("runtime: cpu  ", f"runtime: {args.runtime}  ")
                 .replace("tags: [template]", f"tags: [{', '.join(tags)}]")
-                .replace("repository: sipg-isr/visionist-template",
-                         f"repository: sipg-isr/visionist-{name.replace('_', '-')}")
+                .replace("repository: sipgisr/visionist-template",
+                         f"repository: sipgisr/visionist-{name.replace('_', '-')}")
                 .replace("github: your-github-handle", f"github: {args.github}"))
     (dest / "box.yaml").write_text(manifest)
 

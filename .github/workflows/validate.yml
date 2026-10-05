@@ -1,0 +1,88 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  static:
+    name: manifests, contract, generated files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r tools/requirements.txt
+      - name: Manifests validate against registry/schema.json (+ naming, files, fixture cap)
+        run: python3 tools/validate_boxes.py
+      - name: Every box's protos/ matches contract/
+        run: python3 tools/sync_contract.py --check
+      - name: index.json, README table, .gitignore asset list, CODEOWNERS are current
+        run: python3 tools/build_index.py --check
+
+  select:
+    name: which boxes changed
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.pick.outputs.matrix }}
+      any: ${{ steps.pick.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r tools/requirements.txt
+      - id: pick
+        run: |
+          BASE="origin/${{ github.base_ref || 'main' }}"
+          if [ "${{ github.event_name }}" = "push" ]; then BASE="${{ github.event.before }}"; fi
+          MATRIX=$(python3 tools/changed_boxes.py --base "$BASE" || python3 tools/build_index.py --matrix)
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+          echo "any=$(echo "$MATRIX" | python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["box"] else "false")')" >> "$GITHUB_OUTPUT"
+
+  conformance:
+    name: conformance (${{ matrix.box.name }})
+    needs: select
+    if: needs.select.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r tools/requirements.txt grpcio visionist-client
+      - name: Free disk space (some images are very large)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
+          df -h /
+      - name: Build
+        working-directory: ${{ matrix.box.context }}
+        run: |
+          EXTRA=""
+          # d4rt bakes in a ~4.6 GB checkpoint; CI builds it thin
+          if [ "${{ matrix.box.name }}" = "d4rt" ]; then EXTRA="--build-arg DOWNLOAD_WEIGHTS=false"; fi
+          docker build --tag box-under-test -f docker/Dockerfile \
+            --build-arg SERVICE_NAME=${{ matrix.box.key }} $EXTRA .
+      - name: Run
+        run: docker run --rm -d -p 8061:8061 -e PORT=8061 --name box box-under-test
+      - name: Wait for the gRPC port
+        run: |
+          python3 - <<'PY'
+          import grpc, sys
+          ch = grpc.insecure_channel("localhost:8061")
+          try:
+              grpc.channel_ready_future(ch).result(timeout=300)
+          except grpc.FutureTimeoutError:
+              sys.exit("box did not come up within 300 s")
+          PY
+      - name: Contract conformance
+        run: python3 contract/conformance/test_conformance.py --box ${{ matrix.box.name }} --host localhost:8061
+      - if: failure()
+        run: docker logs box

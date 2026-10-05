@@ -15,9 +15,8 @@ tags:
   - dynamic-3d
   - geometry
 image:
-  repository: sipg-isr/visionist-d4rt
+  repository: sipgisr/visionist-d4rt
   registries:
-    - ghcr
     - dockerhub
   platforms:
     - linux/amd64

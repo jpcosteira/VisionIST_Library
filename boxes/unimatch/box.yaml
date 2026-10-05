@@ -14,9 +14,8 @@ tags:
 - depth
 - geometry
 image:
-  repository: sipg-isr/visionist-unimatch
+  repository: sipgisr/visionist-unimatch
   registries:
-  - ghcr
   - dockerhub
   platforms:
   - linux/amd64
