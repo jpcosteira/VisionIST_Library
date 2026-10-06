@@ -100,6 +100,9 @@ CI refuses the tag if it disagrees with the manifest, then builds and pushes
 to Docker Hub (`sipgisr/`). Boxes version independently — your release does not
 move anyone else's.
 
+Running your own fork of this registry (other GitHub owner, other Docker Hub
+namespace)? [fork.md](fork.md) lists every static reference to change.
+
 ## Asking for the contract to change
 
 Open an issue first. `contract/pipeline.proto` is a wire format shared by every

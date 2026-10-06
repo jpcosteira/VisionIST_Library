@@ -124,12 +124,3 @@ constraints:
 - Per-scale list lengths must equal num_scales.
 links:
   upstream: https://github.com/autonomousvision/unimatch
-assets:
-- path: test/stereo_0.png
-  bytes: 5561111
-  sha256: 912a0911370f646e4c543a9fde6bd9e1a48824925718baa54b4fce446b3c178f
-  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/unimatch/test/stereo_0.png
-- path: test/stereo_1.png
-  bytes: 5694114
-  sha256: bd614c2982f199d92442a9c1755872c43e48b6dcc7674c8d0dfa31f80b4ae2b6
-  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/unimatch/test/stereo_1.png

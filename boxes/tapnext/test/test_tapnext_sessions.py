@@ -290,9 +290,9 @@ def test_grpc_end_to_end():
 
 def test_video_input():
     print("8. data.video input (the box decodes the video server-side, like yolo)")
-    video_path = os.path.join(TEST_DIR, "apple.mp4")
+    video_path = os.path.join(TEST_DIR, "pan.mp4")
     if not os.path.exists(video_path):
-        print("  (apple.mp4 fixture not present — skipped)")
+        print("  (pan.mp4 fixture not present — skipped)")
         return
     with open(video_path, "rb") as f:
         video_bytes = f.read()

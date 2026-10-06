@@ -23,6 +23,8 @@ The client, the webui, the docs and a reference fleet live in
 [VisionIST](https://github.com/jpcosteira/VisionIST). Together with VisionIST_Matlab
 
 Visit our  [Docker Hub repositories](https://hub.docker.com/repositories/sipgisr). VisionIST componentes are named sipgisr/visionist-name-of-the-box
+
+Want your own registry that the VisionIST client can still use? See [fork.md](fork.md).
 ## Use a box
 
 ```bash
@@ -36,7 +38,7 @@ docker run --rm -p 8061:8061 -e PORT=8061 docker.io/sipgisr/visionist-clip
 ```python
 from visionist_client import Visionist
 b = Visionist("localhost:8061")
-res = b.run(data={"images": [pathlib.Path("dog.jpg")], "texts": ["a dog"]},
+res = b.run(data={"images": [pathlib.Path("car.jpg")], "texts": ["a race car"]},
             config={"clip": {}})
 ```
 

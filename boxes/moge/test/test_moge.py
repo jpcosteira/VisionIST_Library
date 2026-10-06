@@ -47,16 +47,14 @@ OUTPUT_DIR = Path(__file__).parent.parent / "test_output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 logger.info(f"Test output directory: {OUTPUT_DIR}")
 
-# Test image: the box ships its own fixture (test/test.jpg); also accept the
-# clip box photos when running inside the repo.
-_CLIP_FIXTURES = Path(__file__).resolve().parents[2] / "clip" / "test"
+# Test image: the box ships its own fixture (test/car.jpg, the same photo the
+# clip/yolo boxes use).
+_FIXTURES = Path(__file__).resolve().parent
 COMMON_IMAGE_PATHS = [
-    Path(__file__).parent / "test.jpg",
-    _CLIP_FIXTURES / "car.jpg",
-    _CLIP_FIXTURES / "dog.jpg",
+    _FIXTURES / "car.jpg",
 ]
 
-TEST_IMAGE_DIRS = [_CLIP_FIXTURES]
+TEST_IMAGE_DIRS = [_FIXTURES]
 
 
 def save_inference_results(result, input_img_path, runtime, test_name):

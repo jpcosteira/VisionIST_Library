@@ -62,8 +62,3 @@ constraints:
 - Invalid pixels come back as inf/nan in depth - filter with the mask.
 links:
   upstream: https://github.com/microsoft/MoGe
-assets:
-- path: test/test.jpg
-  bytes: 388353
-  sha256: 1715d210ef0c40c93b9e60cef7b988a9931df369868de2c265642d726d50b187
-  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/moge_box/test/test.jpg

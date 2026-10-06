@@ -57,8 +57,7 @@ python test/test_moge.py
 # With custom host
 BOX_HOST=localhost:8061 python test/test_moge.py
 
-# Ships a fixture at boxes/moge/test/test.jpg (clip box photos are also
-# picked up automatically when running inside the repo).
+# Ships a fixture at boxes/moge/test/car.jpg (same photo as the clip box).
 ```
 
 ## Output Format

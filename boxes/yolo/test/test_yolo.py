@@ -2,8 +2,7 @@
 """Test script for the YOLO gRPC service (shared envelope interface).
 
 Connects to a running yolo box and:
-  1. builds an Envelope with the two bundled test images
-     (``dog.jpg`` - the dog in the grass, and ``car.jpg`` - the car)
+  1. builds an Envelope with the bundled test image (``car.jpg`` - the car)
   2. calls stub.Process(request)
   3. decodes the declared-``json`` ``detections`` field and prints, per
      frame, the detection count and each box/label/score
@@ -12,7 +11,7 @@ Connects to a running yolo box and:
      (``track_id`` per box, stable within a session, independent across
      sessions, ``reset`` scoped to the session, ``list``)
   6. optionally, if a video is available (``YOLO_TEST_VIDEO`` env var, or
-     the repo's ``cozinha.mp4`` at the repo root), runs the same tour on
+     the tapnext box's ``test/pan.mp4``, a Library fixture), runs the same tour on
      the video input with frame sampling
   7. optionally, if ``YOLO_TEST_WEIGHTS`` names a fetchable checkpoint,
      exercises the ``parameters.weights`` switch (and the switch back)
@@ -22,7 +21,7 @@ Mirrors the style of test/test_clip.py in the clip box.
 Run (from the repo or image root, server already up):
     python test/test_yolo.py
     BOX_HOST=10.0.0.5:8061 python test/test_yolo.py
-    YOLO_TEST_VIDEO=cozinha.mp4 python test/test_yolo.py
+    YOLO_TEST_VIDEO=my_clip.mp4 python test/test_yolo.py
 """
 
 import json
@@ -90,9 +89,8 @@ def main():
     # ------------------------------------------------------------------ #
     # Case 1: images                                                      #
     # ------------------------------------------------------------------ #
-    print("\n== case 1: images (dog.jpg + car.jpg) ==")
+    print("\n== case 1: images (car.jpg) ==")
     image_bytes_list = [
-        load_local_image(os.path.join(_TEST_DIR, "dog.jpg")),
         load_local_image(os.path.join(_TEST_DIR, "car.jpg")),
     ]
     request = pipeline_pb2.Envelope(
@@ -165,7 +163,7 @@ def main():
     # Case 2b: multi-session tracking (tapnext-style contract)            #
     # ------------------------------------------------------------------ #
     print("\n== case 2b: multi-session tracking (track_id) ==")
-    dog = image_bytes_list[0]  # dog.jpg — reliably has a COCO object
+    dog = image_bytes_list[0]  # car.jpg — reliably has a COCO object (car)
 
     def call_session(sid):
         resp = stub.Process(pipeline_pb2.Envelope(
@@ -262,7 +260,7 @@ def main():
     # ------------------------------------------------------------------ #
     print("\n== case 3: video (optional) ==")
     video_path = os.getenv("YOLO_TEST_VIDEO") or os.path.join(
-        _TEST_DIR, "..", "..", "..", "cozinha.mp4")
+        _TEST_DIR, "..", "..", "tapnext", "test", "pan.mp4")
     if not os.path.isfile(video_path):
         print(f"  SKIPPED — no video (set YOLO_TEST_VIDEO; tried {video_path})")
     else:

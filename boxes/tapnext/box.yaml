@@ -76,8 +76,3 @@ constraints:
 - Sessions expire (TAPNEXT_SESSION_TTL, default 1800s).
 links:
   upstream: https://github.com/google-deepmind/tapnet
-assets:
-- path: test/apple.mp4
-  bytes: 1219872
-  sha256: c7f48c5cfb1479e1dbc1df2373d5cad4f55c198bbdb379da0ece10087971542a
-  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/tapnext_tracker/test/apple.mp4

@@ -2,9 +2,8 @@
 """Test script for the LangSAM (lang_sam) gRPC service (shared envelope).
 
 Connects to a running lang_sam box and:
-  1. builds an Envelope with the two photos bundled in the clip box's
-     test folder (``dog.jpg`` - the dog in the grass, ``car.jpg`` - the car)
-     plus matching text prompts
+  1. builds an Envelope with the photo bundled in this box's test
+     folder (``car.jpg`` - the car) plus matching text prompts
   2. calls stub.Process(request)
   3. decodes data["results"] (zstd + pickle) and prints the per-image
      masks / bboxes / scores
@@ -32,15 +31,15 @@ import pipeline_pb2_grpc  # noqa: E402
 import aux  # noqa: E402
 
 
-_CLIP_TEST_DIR = os.path.normpath(os.path.join(_TEST_DIR, "..", "..", "clip", "test"))
+_IMG_DIR = _TEST_DIR   # car.jpg lives next to this script
 
 
 def load_test_image(name: str) -> bytes:
-    """Load a bundled test photo (from the clip box test folder).
+    """Load a bundled test photo (from this box's test folder).
 
     Falls back to a generated image if the file is not present.
     """
-    path = os.path.join(_CLIP_TEST_DIR, name)
+    path = os.path.join(_IMG_DIR, name)
     if os.path.isfile(path):
         with open(path, "rb") as f:
             data = f.read()
@@ -131,9 +130,8 @@ def main():
     target = os.getenv("BOX_HOST", "localhost:8061")
     print(f"Target: {target}")
 
-    # The same two photos the clip box uses for its test (dog in the
-    # grass, race car); the prompts below include matching subjects.
-    image_files = ["dog.jpg", "car.jpg"]
+    # The bundled photo (race car); the prompts below include matching subjects.
+    image_files = ["car.jpg"]
     image_bytes_list = [load_test_image(n) for n in image_files]
     texts = ["a dog", "grass", "garden", "a race car", "a rectangle"]
 

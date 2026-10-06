@@ -6,7 +6,7 @@ box, with realistic staggering — some start together, others start in between.
 Each student:
   * gets a random session_id
   * resets their own session (fresh start)
-  * streams K random video frames from test/apple.mp4, one request per frame
+  * streams K random video frames from test/pan.mp4 (see make_test_video.py), one request per frame
   * records status, latencies, final frames_processed
 
 Isolation proof: after a run, `list` must show exactly the frames each student

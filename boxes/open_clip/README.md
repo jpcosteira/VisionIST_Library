@@ -121,7 +121,7 @@ print(b.run(config={"open_clip": {"command": "models",
 
 # zero-shot classification with a larger model
 res = b.run(
-    data={"images": ["dog.jpg", "car.jpg"],
+    data={"images": ["car.jpg"],
           "texts": ["a dog", "a cat", "a race car"]},
     config={"open_clip": {"command": "encode",
                           "parameters": {"model": "ViT-L-14",
@@ -137,7 +137,6 @@ print(res.probs)            # (2, 3), decoded with the declared numpy codec
 python test/smoke_inprocess.py
 
 # against a running box; meaningful when it has real weights
-python ../../tools/fetch_assets.py open_clip       # downloads test/dog.jpg once
 python test/test_open_clip.py
 OPEN_CLIP_TEST_MODEL=ViT-L-14 OPEN_CLIP_TEST_PRETRAINED=datacomp_xl_s13b_b90k python test/test_open_clip.py
 

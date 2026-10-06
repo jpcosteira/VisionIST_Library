@@ -43,7 +43,6 @@ yolo/
 │   └── yolo_service.py        # PipelineService.Process(Envelope)
 ├── test/
 │   ├── test_yolo.py           # in-process / remote smoke test (dummy images)
-│   ├── dog.jpg                # test fixture
 │   └── car.jpg                # test fixture
 ├── requirements.txt
 └── README.md
@@ -175,7 +174,7 @@ b = Visionist("localhost:8061")
 
 # --- images ---------------------------------------------------------
 res = b.run(
-    data   = {"images": [pathlib.Path("dog.jpg"), pathlib.Path("car.jpg")]},
+    data   = {"images": [pathlib.Path("car.jpg")]},
     config = {"yolo": {"command": "detect",
                        "parameters": {"conf": 0.25}}},
 )
@@ -187,7 +186,7 @@ open("frame0.jpg", "wb").write(res.annotated[0])   # optional annotated JPEGs
 
 # --- video ----------------------------------------------------------
 res = b.run(
-    data   = {"video": pathlib.Path("cozinha.mp4")},
+    data   = {"video": pathlib.Path("pan.mp4")},
     config = {"yolo": {"command": "detect",
                        "parameters": {"frame_step": 30, "max_frames": 16,
                                       "save_annotated": False}}},
@@ -196,7 +195,7 @@ print(res.config["yolo"])   # frames_sampled / frames_in_video / num_detections
 
 # --- switch the checkpoint for one call (downloads on first use) ----
 res = b.run(
-    data   = {"images": [pathlib.Path("dog.jpg")]},
+    data   = {"images": [pathlib.Path("car.jpg")]},
     config = {"yolo": {"command": "detect",
                       "parameters": {"weights": "yolov11n.pt"}}},
 )
@@ -257,11 +256,11 @@ video input path:
 # server already running at :8061
 python test/test_yolo.py
 BOX_HOST=10.0.0.5:8061 python test/test_yolo.py
-YOLO_TEST_VIDEO=cozinha.mp4 python test/test_yolo.py
+YOLO_TEST_VIDEO=my_clip.mp4 python test/test_yolo.py
 ```
 
 The video case is **skipped** (not failed) when no video file is available:
-it checks `YOLO_TEST_VIDEO`, then the repo's `cozinha.mp4` at the repo root.
+it checks `YOLO_TEST_VIDEO`, then `boxes/tapnext/test/pan.mp4` (a short synthetic clip from `tapnext/test/make_test_video.py`).
 Likewise, a `parameters.weights` switch is exercised only when
 `YOLO_TEST_WEIGHTS` names a checkpoint the test may fetch (e.g.
 `YOLO_TEST_WEIGHTS=yolov8s.pt`).

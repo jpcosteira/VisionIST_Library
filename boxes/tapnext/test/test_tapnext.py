@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Test script for TAPNext gRPC service - sequential frame processing."""
 
+import os
 import sys
-sys.path.append("../protos")
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "protos"))
 
 import grpc
 import pipeline_pb2, pipeline_pb2_grpc, aux
@@ -96,7 +97,7 @@ def main():
     print("Testing TAPNext point tracking service (sequential mode)...")
     
     # Load test video frames
-    video_path = "./apple.mp4"
+    video_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pan.mp4")
     try:
         frames = load_video_frames(video_path)
         print(f"Loaded {len(frames)} frames from test video")

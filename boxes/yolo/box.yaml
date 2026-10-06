@@ -95,8 +95,3 @@ constraints:
 - Sessions expire (YOLO_SESSION_TTL, default 1800s).
 links:
   upstream: https://github.com/ultralytics/ultralytics
-assets:
-- path: test/dog.jpg
-  bytes: 388353
-  sha256: 1715d210ef0c40c93b9e60cef7b988a9931df369868de2c265642d726d50b187
-  url: https://raw.githubusercontent.com/pivist/VisionIST-PIV/b7ac0229865901e318aa14012a73d9c7f40e8bee/images/yolo/test/dog.jpg

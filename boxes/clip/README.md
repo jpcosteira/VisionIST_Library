@@ -79,7 +79,7 @@ from visionist_client import Visionist
 b = Visionist("localhost:8061")
 res = b.run(
     data={
-        "images": ["car.jpg", "dog.jpg"],        # local paths -> bytes
+        "images": ["car.jpg"],                    # local paths -> bytes
         "texts": ["a dog", "a cat", "a race car", "grass"],
     },
     config={"clip": {"command": "encode"}},
@@ -102,7 +102,7 @@ stub = pipeline_pb2_grpc.PipelineServiceStub(channel)
 req = pipeline_pb2.Envelope(
     config_json=json.dumps({"clip": {"command": "encode"}}),
     data={
-        "images": aux.wrap_value([open("car.jpg","rb").read(), open("dog.jpg","rb").read()]),
+        "images": aux.wrap_value([open("car.jpg","rb").read()]),
         "texts":  aux.wrap_value(["a dog", "a cat", "a race car"]),
     },
 )

@@ -7,7 +7,7 @@ Connects to a running box and:
   3. checks shapes, that embeddings are unit length and that the similarity is
      their cosine
   4. prints the zero-shot ranking, so a real checkpoint should say
-     dog.jpg -> "a dog" and car.jpg -> "a race car"
+     car.jpg -> "a race car"
 
 With the default checkpoint the ranking is meaningful; against a box running
 random weights (the in-process smoke test's loader) only the structure is.
@@ -17,8 +17,7 @@ random weights (the in-process smoke test's loader) only the structure is.
     OPEN_CLIP_TEST_MODEL=ViT-L-14 OPEN_CLIP_TEST_PRETRAINED=datacomp_xl_s13b_b90k \\
         python test/test_open_clip.py
 
-dog.jpg is a declared asset: `python tools/fetch_assets.py open_clip` from the
-repo root downloads it. Without it the test uses car.jpg alone.
+car.jpg is committed next to this script; no download is needed.
 """
 
 import io
@@ -72,7 +71,7 @@ def main():
     print(f"default: {cfg['default']}   {cfg['num_models']} models   "
           f"loaded: {cfg['loaded']}")
 
-    names = [n for n in ("dog.jpg", "car.jpg")
+    names = [n for n in ("car.jpg",)
              if os.path.isfile(os.path.join(_TEST_DIR, n))]
     if not names:
         print("no test images found next to this script")

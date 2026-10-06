@@ -2,8 +2,7 @@
 """Test script for the CLIP gRPC service (shared envelope interface).
 
 Connects to a running clip box and:
-  1. builds an Envelope with the two bundled test images
-     (``dog.jpg`` - the dog in the grass, and ``car.jpg`` - the car)
+  1. builds an Envelope with the bundled test image (``car.jpg`` - the car)
      plus sample texts
   2. calls stub.Process(request)
   3. loads and prints the shape of image_emb / text_emb / similarity
@@ -47,9 +46,8 @@ def main():
     target = os.getenv("BOX_HOST", "localhost:8061")
     print(f"Target: {target}")
 
-    # The two bundled test images (dog in the grass, car).
+    # The bundled test image (a race car).
     image_bytes_list = [
-        load_local_image(os.path.join(_TEST_DIR, "dog.jpg")),
         load_local_image(os.path.join(_TEST_DIR, "car.jpg")),
     ]
     texts = ["a diagram", "a dog", "a cat", "garden", "grass", "dirt road", "race car"]
@@ -101,11 +99,11 @@ def main():
         print(f"{key}: shape={tuple(t.shape)} dtype={t.dtype}")
 
     # Show the cross-modal logits so the expected pairings are visible
-    # (dog -> "a dog", car -> "race car").
+    # (car -> "race car").
     if "similarity" in shapes:
         import torch
         logits = shapes["similarity"].softmax(dim=-1).detach().cpu().numpy()
-        labels = [os.path.basename(p) for p in ("dog.jpg", "car.jpg")]
+        labels = [os.path.basename(p) for p in ("car.jpg",)]
         print("\nper-image similarity (softmax over texts):")
         for i, lab in enumerate(labels):
             row = logits[i]

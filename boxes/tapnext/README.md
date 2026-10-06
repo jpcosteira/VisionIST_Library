@@ -122,7 +122,7 @@ decodes it into ordered frames on the server side (mirroring the yolo box) and
 feeds them through the exact same per-frame tracker:
 
 ```python
-video_bytes = open("cozinha.mp4", "rb").read()   # or pathlib.Path(...) via visionist_client
+video_bytes = open("test/pan.mp4", "rb").read()   # or pathlib.Path(...) via visionist_client
 
 request = proto.Envelope(
     config_json=json.dumps({

@@ -164,7 +164,7 @@ req = pipeline_pb2.Envelope(
         "command": "segment",
         "text_prompt": ["a square"],
     }}),
-    data={"images": aux.wrap_value([open("test.jpg", "rb").read()])},
+    data={"images": aux.wrap_value([open("car.jpg", "rb").read()])},
 )
 resp = stub.Process(req)
 print(json.loads(resp.config_json))
@@ -176,17 +176,16 @@ print(json.loads(resp.config_json))
 prints the per-image mask shapes, area fractions and scores. It also
 **paints each mask area in its own color** over the original photo and saves
 annotated PNGs in the test folder (plus an RGB legend per mask), so the
-segmentation can be checked visually: `output_dog_langsam.png`,
-`output_car_langsam.png`.
+segmentation can be checked visually: `output_car_langsam.png`.
 
-Expected: at least one mask on the dog image (prompt includes "a dog") and
-ideally one on the car image ("a race car"); both prompts are joined into a
-single LangSAM prompt, so some overlap/noise is normal.
+Expected: at least one mask on the car image (prompt includes "a race car");
+all prompts are joined into a single LangSAM prompt, so some overlap/noise is
+normal.
 
 ```bash
 # server already up on :8061
 python test/test_lang_sam.py
 # or a remote box:
 BOX_HOST=10.0.0.5:8061 python test/test_lang_sam.py
-# then open test/output_dog_langsam.png / test/output_car_langsam.png
+# then open test/output_car_langsam.png
 ```
