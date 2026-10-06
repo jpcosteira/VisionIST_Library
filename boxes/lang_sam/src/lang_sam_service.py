@@ -212,8 +212,15 @@ class PipelineService(lang_sam_grpc.PipelineServiceServicer):
             return lang_sam_pb2.Envelope(config_json=request.config_json)
 
         img_list = unwrap_value(request.data["images"])
+        # A lone image arrives as a bare bytes value (Value.b), not a
+        # one-element BytesList; iterating it would yield ints.
+        if isinstance(img_list, (bytes, bytearray)):
+            img_list = [img_list]
         if not img_list:
             return _status("empty_request")
+        if not all(isinstance(b, (bytes, bytearray)) for b in img_list):
+            return _status("error", error="data.images must be image file bytes "
+                           "(send the file contents, not a path string)")
 
         # --- Extract text prompts ---
         text_prompts = box_cfg.get("text_prompt") or parameters.get("text_prompt") or []

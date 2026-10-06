@@ -226,10 +226,19 @@ class PipelineService(pipeline_pb2_grpc.PipelineServiceServicer):
             if not isinstance(params, dict) and isinstance(config, dict):
                 params = config.get("parameters") or {}   # legacy flat form
 
-            if "images" not in request.data or not unwrap_value(request.data["images"]):
+            image_list = (unwrap_value(request.data["images"])
+                          if "images" in request.data else None)
+            # A lone image arrives as a bare bytes value (Value.b), not a
+            # one-element BytesList; iterating it would yield ints.
+            if isinstance(image_list, (bytes, bytearray)):
+                image_list = [image_list]
+            if not image_list:
                 return _cfg_envelope("empty_request")
-
-            image_list = unwrap_value(request.data["images"])
+            if not all(isinstance(b, (bytes, bytearray)) for b in image_list):
+                return _cfg_envelope(
+                    "error",
+                    error="data.images must be image file bytes (send the file "
+                          "contents, not a path string)")
 
             device = self._resolve_device(params.get("device"))
             conf_thres = params.get("conf_threshold", 30)

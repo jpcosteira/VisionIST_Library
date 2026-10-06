@@ -90,6 +90,12 @@ class PipelineService(pipeline_pb2_grpc.PipelineServiceServicer):
             # require re-loading and is intentionally deferred.
             image_bytes_list = unwrap_value(request.data["images"]) if "images" in request.data else None
             texts_list = unwrap_value(request.data["texts"]) if "texts" in request.data else None
+            # A lone value arrives bare (Value.b / Value.s), not as a one-element
+            # list; iterating it would yield ints / characters.
+            if isinstance(image_bytes_list, (bytes, bytearray)):
+                image_bytes_list = [image_bytes_list]
+            if isinstance(texts_list, str):
+                texts_list = [texts_list]
 
             if not image_bytes_list:
                 return pipeline_pb2.Envelope(
@@ -97,6 +103,12 @@ class PipelineService(pipeline_pb2_grpc.PipelineServiceServicer):
             if not texts_list:
                 return pipeline_pb2.Envelope(
                     config_json=json.dumps({"clip": {"status": "error", "error": "No texts in data"}}))
+            if not all(isinstance(b, (bytes, bytearray)) for b in image_bytes_list):
+                return pipeline_pb2.Envelope(
+                    config_json=json.dumps({"clip": {
+                        "status": "error",
+                        "error": "data.images must be image file bytes (send the "
+                                 "file contents, not a path string)"}}))
 
             image_features, text_features, logits_per_image = self._encode(
                 image_bytes_list, texts_list)
