@@ -196,12 +196,27 @@ class MoGeBox(pipeline_pb2_grpc.PipelineServiceServicer):
                 )
             
             images = unwrap_value(request.data["images"])
+            # A lone image arrives as a bare bytes value (Value.b), not a
+            # one-element BytesList; iterating it would yield ints.
+            if isinstance(images, (bytes, bytearray)):
+                images = [images]
             if not images or len(images) == 0:
                 return pipeline_pb2.Envelope(
                     config_json=json.dumps({
                         "moge": {
                             "status": "empty_request",
                             "error": "Empty images list"
+                        }
+                    })
+                )
+            if not all(isinstance(b, (bytes, bytearray)) for b in images):
+                return pipeline_pb2.Envelope(
+                    config_json=json.dumps({
+                        "moge": {
+                            "status": "error",
+                            "error": "data.images must be image file bytes "
+                                     "(send the file contents, e.g. "
+                                     "pathlib.Path(...), not a path string)"
                         }
                     })
                 )

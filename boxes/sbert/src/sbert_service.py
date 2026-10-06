@@ -85,6 +85,8 @@ class PipelineService(pipeline_pb2_grpc.PipelineServiceServicer):
                     config_json=json.dumps({"sbert": {"status": "done", "action": "reset"}}))
 
             texts = unwrap_value(request.data["texts"]) if "texts" in request.data else None
+            if isinstance(texts, str):      # lone text arrives bare (Value.s)
+                texts = [texts]
             if not texts or not isinstance(texts, list) or len(texts) == 0:
                 return pipeline_pb2.Envelope(
                     config_json=json.dumps({"sbert": {"status": "empty_request"}}))
